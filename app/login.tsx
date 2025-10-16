@@ -1,20 +1,25 @@
-import React from 'react';
-import { StyleSheet, FlatList, SafeAreaView } from 'react-native';
-import { useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { useAppContext } from '@/hooks/AppContext';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { UserListItem } from '@/components/UserListItem';
+import React from "react";
+import { StyleSheet, FlatList, SafeAreaView, Alert } from "react-native";
+import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useAppContext } from "@/hooks/AppContext";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { UserListItem } from "@/components/UserListItem";
 
 export default function LoginScreen() {
   const { users, login } = useAppContext();
   const router = useRouter();
 
-  const handleUserSelect = (userId: string) => {
-    if (login(userId)) {
-      router.replace('/(tabs)');
+  const handleUserSelect = async (userId: string) => {
+    // Better handle the error case here
+    // and i added await here to wait for the login to complete
+    const loggedIn = await login(userId);
+    if (!loggedIn) {
+      Alert.alert("Error", "Failed to login");
+      return;
     }
+    router.replace("/(tabs)");
   };
 
   return (
@@ -27,7 +32,7 @@ export default function LoginScreen() {
             Select a user to continue
           </ThemedText>
         </ThemedView>
-        
+
         <FlatList
           data={users}
           keyExtractor={(item) => item.id}
@@ -53,16 +58,16 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 20,
     marginBottom: 20,
   },
   subtitle: {
     marginTop: 10,
     fontSize: 16,
-    color: '#8F8F8F',
+    color: "#8F8F8F",
   },
   listContainer: {
     paddingBottom: 20,
   },
-}); 
+});
