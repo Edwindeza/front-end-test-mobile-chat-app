@@ -18,6 +18,20 @@ const MAPPING = {
   "paperplane.fill": "send",
   "chevron.left.forwardslash.chevron.right": "code",
   "chevron.right": "chevron-right",
+  // Chat and messaging icons
+  "bubble.left.and.bubble.right": "chat-bubble-outline",
+  "bubble.left.and.bubble.right.fill": "chat-bubble",
+  // Person and profile icons
+  "person.circle": "person-outline",
+  "person.circle.fill": "person",
+  // Close/X icon
+  xmark: "close",
+  // Plus icon
+  plus: "add",
+  // Navigation icons
+  "chevron.left": "chevron-left",
+  // Send message icon
+  "arrow.up.circle.fill": "send",
 } as Partial<
   Record<
     import("expo-symbols").SymbolViewProps["name"],
