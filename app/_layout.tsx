@@ -5,13 +5,13 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack, usePathname, useSegments, useRouter } from "expo-router";
+import { Stack, useSegments, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { AppProvider, useAppContext } from "@/hooks/AppContext";
+import { useColorScheme } from "@/shared/hooks/useColorScheme";
+import { AppProvider, useAppContext } from "@/shared/Context/AppContext";
 import { DrizzleStudioDevTool } from "@/database/DrizzleStudio";
 
 SplashScreen.preventAutoHideAsync();

@@ -2,10 +2,10 @@ import React from "react";
 import { StyleSheet, FlatList, SafeAreaView, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useAppContext } from "@/hooks/AppContext";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { UserListItem } from "@/components/UserListItem";
+import { useAppContext } from "@/shared/Context/AppContext";
+import { ThemedText } from "@/shared/components/ThemedText";
+import { ThemedView } from "@/shared/components/ThemedView";
+import { UserListItem } from "@/modules/user/components/UserListItem";
 
 export default function LoginScreen() {
   const { users, login } = useAppContext();

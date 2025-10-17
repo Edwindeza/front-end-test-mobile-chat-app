@@ -10,12 +10,14 @@ import {
 } from "react-native";
 import { useLocalSearchParams, Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useAppContext } from "@/hooks/AppContext";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { MessageBubble } from "@/components/MessageBubble";
-import { Avatar } from "@/components/Avatar";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import { useAppContext } from "@/shared/Context/AppContext";
+import { ThemedText } from "@/shared/components/ThemedText";
+import { ThemedView } from "@/shared/components/ThemedView";
+import { MessageBubble } from "@/modules/chat/components/MessageBubble";
+import { Avatar } from "@/shared/components/Avatar";
+import { IconSymbol } from "@/shared/components/IconSymbol";
+import { Chat } from "@/modules/chat/types/chat.type";
+import { User } from "@/modules/user/hooks/useUserDb";
 
 export default function ChatRoomScreen() {
   const { chatId } = useLocalSearchParams<{ chatId: string }>();
@@ -24,12 +26,12 @@ export default function ChatRoomScreen() {
   const flatListRef = useRef<FlatList>(null);
   const router = useRouter();
 
-  const chat = chats.find((c) => c.id === chatId);
+  const chat = chats.find((c: Chat) => c.id === chatId);
 
   const chatParticipants =
     chat?.participants
-      .filter((id) => id !== currentUser?.id)
-      .map((id) => users.find((user) => user.id === id))
+      .filter((id: string) => id !== currentUser?.id)
+      .map((id: string) => users.find((user: User) => user.id === id))
       .filter(Boolean) || [];
 
   const chatName =
