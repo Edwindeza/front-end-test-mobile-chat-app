@@ -41,40 +41,44 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
           style={styles.modalContent}
           onPress={(e) => e.stopPropagation()}
         >
-          <ThemedView style={styles.modalHeader}>
-            <ThemedText type="subtitle">New Chat</ThemedText>
-            <Pressable onPress={handleClose}>
-              <IconSymbol name="xmark" size={24} color="#007AFF" />
+          <ThemedView style={styles.modalInnerContent}>
+            <ThemedView style={styles.modalHeader}>
+              <ThemedText type="subtitle">New Chat</ThemedText>
+              <Pressable onPress={handleClose}>
+                <IconSymbol name="xmark" size={24} color="#007AFF" />
+              </Pressable>
+            </ThemedView>
+
+            <ThemedText style={styles.modalSubtitle}>
+              Select users to chat with
+            </ThemedText>
+
+            <FlatList
+              data={users.filter((user) => user.id !== currentUserId)}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <UserListItem
+                  user={item}
+                  onSelect={() => onToggleUser(item.id)}
+                  isSelected={selectedUsers.includes(item.id)}
+                />
+              )}
+              style={styles.userList}
+            />
+
+            <Pressable
+              style={[
+                styles.createButton,
+                selectedUsers.length === 0 && styles.disabledButton,
+              ]}
+              onPress={onCreateChat}
+              disabled={selectedUsers.length === 0}
+            >
+              <ThemedText style={styles.createButtonText}>
+                Create Chat
+              </ThemedText>
             </Pressable>
           </ThemedView>
-
-          <ThemedText style={styles.modalSubtitle}>
-            Select users to chat with
-          </ThemedText>
-
-          <FlatList
-            data={users.filter((user) => user.id !== currentUserId)}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <UserListItem
-                user={item}
-                onSelect={() => onToggleUser(item.id)}
-                isSelected={selectedUsers.includes(item.id)}
-              />
-            )}
-            style={styles.userList}
-          />
-
-          <Pressable
-            style={[
-              styles.createButton,
-              selectedUsers.length === 0 && styles.disabledButton,
-            ]}
-            onPress={onCreateChat}
-            disabled={selectedUsers.length === 0}
-          >
-            <ThemedText style={styles.createButtonText}>Create Chat</ThemedText>
-          </Pressable>
         </Pressable>
       </Pressable>
     </Modal>
@@ -92,13 +96,15 @@ const styles = StyleSheet.create({
     width: "90%",
     maxHeight: "80%",
     borderRadius: 10,
-    padding: 20,
-    backgroundColor: "white",
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+  },
+  modalInnerContent: {
+    padding: 20,
+    borderRadius: 10,
   },
   modalHeader: {
     flexDirection: "row",

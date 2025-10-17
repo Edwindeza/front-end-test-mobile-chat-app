@@ -93,6 +93,16 @@ export default function ChatRoomScreen() {
         ref={flatListRef}
         data={chat.messages}
         keyExtractor={(item) => item.id}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        windowSize={10}
+        initialNumToRender={15}
+        updateCellsBatchingPeriod={50}
+        getItemLayout={(data, index) => ({
+          length: 80, // Altura estimada del mensaje
+          offset: 80 * index,
+          index,
+        })}
         renderItem={({ item }) => (
           <MessageBubble
             message={item}
