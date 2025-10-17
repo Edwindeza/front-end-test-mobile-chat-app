@@ -60,7 +60,12 @@ export function Avatar({ user, size = 40, showStatus = true }: AvatarProps) {
           },
         ]}
       >
-        <ThemedText style={[styles.initials, { fontSize: size * 0.4 }]}>
+        <ThemedText
+          style={[
+            styles.initials,
+            { fontSize: size * 0.4, lineHeight: size, height: size },
+          ]}
+        >
           {initials}
         </ThemedText>
       </View>
@@ -94,6 +99,9 @@ const styles = StyleSheet.create({
   initials: {
     color: "white",
     fontWeight: "bold",
+    textAlign: "center",
+    textAlignVertical: "center",
+    includeFontPadding: false,
   },
   statusIndicator: {
     position: "absolute",
