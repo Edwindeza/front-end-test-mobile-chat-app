@@ -1,60 +1,24 @@
-import React, { useState, useRef, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  TextInput,
-  Pressable,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
-import { useLocalSearchParams, Stack, useRouter } from "expo-router";
+import React from "react";
+import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { useAppContext } from "@/shared/Context/AppContext";
-import { ThemedText } from "@/shared/components/ThemedText";
+import { Stack } from "expo-router";
 import { ThemedView } from "@/shared/components/ThemedView";
-import { MessageBubble } from "@/modules/chat/components/MessageBubble";
-import { Avatar } from "@/shared/components/Avatar";
-import { IconSymbol } from "@/shared/components/IconSymbol";
-import { Chat } from "@/modules/chat/types/chat.type";
-import { User } from "@/modules/user/hooks/useUserDb";
+import { ThemedText } from "@/shared/components/ThemedText";
+import { ChatHeader } from "@/modules/chat/components/ChatHeader";
+import { ChatMessages } from "@/modules/chat/components/ChatMessages";
+import { ChatInput } from "@/modules/chat/components/ChatInput";
+import { useChatRoomContainer } from "@/modules/chat/containers/useChatRoomContainer";
 
 export default function ChatRoomScreen() {
-  const { chatId } = useLocalSearchParams<{ chatId: string }>();
-  const { currentUser, users, chats, sendMessage } = useAppContext();
-  const [messageText, setMessageText] = useState("");
-  const flatListRef = useRef<FlatList>(null);
-  const router = useRouter();
-
-  const chat = chats.find((c: Chat) => c.id === chatId);
-
-  const chatParticipants =
-    chat?.participants
-      .filter((id: string) => id !== currentUser?.id)
-      .map((id: string) => users.find((user: User) => user.id === id))
-      .filter(Boolean) || [];
-
-  const chatName =
-    chatParticipants.length === 1
-      ? chatParticipants[0]?.name
-      : `${chatParticipants[0]?.name || "Unknown"} & ${
-          chatParticipants.length - 1
-        } other${chatParticipants.length > 1 ? "s" : ""}`;
-
-  const handleSendMessage = () => {
-    if (messageText.trim() && currentUser && chat) {
-      sendMessage(chat.id, messageText.trim(), currentUser.id);
-      setMessageText("");
-    }
-  };
-
-  useEffect(() => {
-    if (chat?.messages.length && flatListRef.current) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
-    }
-  }, [chat?.messages.length]);
+  const {
+    chat,
+    currentUser,
+    chatParticipants,
+    chatName,
+    messageText,
+    setMessageText,
+    handleSendMessage,
+  } = useChatRoomContainer();
 
   if (!chat || !currentUser) {
     return (
@@ -74,68 +38,22 @@ export default function ChatRoomScreen() {
       <Stack.Screen
         options={{
           headerTitle: () => (
-            <View style={styles.headerContainer}>
-              <Avatar user={chatParticipants[0]} size={32} showStatus={false} />
-              <ThemedText type="defaultSemiBold" numberOfLines={1}>
-                {chatName}
-              </ThemedText>
-            </View>
+            <ChatHeader
+              chatParticipants={chatParticipants}
+              chatName={chatName}
+            />
           ),
-          headerLeft: () => (
-            <Pressable onPress={() => router.back()}>
-              <IconSymbol name="chevron.left" size={24} color="#007AFF" />
-            </Pressable>
-          ),
+          headerLeft: () => null,
         }}
       />
 
-      <FlatList
-        ref={flatListRef}
-        data={chat.messages}
-        keyExtractor={(item) => item.id}
-        removeClippedSubviews={true}
-        maxToRenderPerBatch={10}
-        windowSize={10}
-        initialNumToRender={15}
-        updateCellsBatchingPeriod={50}
-        getItemLayout={(data, index) => ({
-          length: 80, // Altura estimada del mensaje
-          offset: 80 * index,
-          index,
-        })}
-        renderItem={({ item }) => (
-          <MessageBubble
-            message={item}
-            isCurrentUser={item.senderId === currentUser.id}
-          />
-        )}
-        contentContainerStyle={styles.messagesContainer}
-        ListEmptyComponent={() => (
-          <ThemedView style={styles.emptyContainer}>
-            <ThemedText>No messages yet. Say hello!</ThemedText>
-          </ThemedView>
-        )}
-      />
+      <ChatMessages messages={chat.messages} currentUserId={currentUser.id} />
 
-      <ThemedView style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          value={messageText}
-          onChangeText={setMessageText}
-          placeholder="Type a message..."
-          multiline
-        />
-        <Pressable
-          style={[
-            styles.sendButton,
-            !messageText.trim() && styles.disabledButton,
-          ]}
-          onPress={handleSendMessage}
-          disabled={!messageText.trim()}
-        >
-          <IconSymbol name="arrow.up.circle.fill" size={32} color="#007AFF" />
-        </Pressable>
-      </ThemedView>
+      <ChatInput
+        messageText={messageText}
+        onMessageTextChange={setMessageText}
+        onSendMessage={handleSendMessage}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -148,43 +66,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  messagesContainer: {
-    padding: 10,
-    flexGrow: 1,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    padding: 10,
-    alignItems: "flex-end",
-    borderTopWidth: 1,
-    borderTopColor: "#E1E1E1",
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#E1E1E1",
-    borderRadius: 20,
-    padding: 10,
-    maxHeight: 100,
-    backgroundColor: "#F9F9F9",
-  },
-  sendButton: {
-    marginLeft: 10,
-    marginBottom: 5,
-  },
-  disabledButton: {
-    opacity: 0.5,
   },
 });
