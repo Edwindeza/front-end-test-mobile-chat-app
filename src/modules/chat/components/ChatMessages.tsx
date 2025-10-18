@@ -16,29 +16,17 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
 }) => {
   const flatListRef = useRef<FlatList>(null);
 
-  useEffect(() => {
-    if (messages.length && flatListRef.current) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
-    }
-  }, [messages.length]);
-
   return (
     <FlatList
       ref={flatListRef}
-      data={messages}
+      data={messages.slice().reverse()}
       keyExtractor={(item) => item.id}
       removeClippedSubviews={true}
       maxToRenderPerBatch={10}
       windowSize={10}
       initialNumToRender={15}
       updateCellsBatchingPeriod={50}
-      getItemLayout={(data, index) => ({
-        length: 80, // Altura estimada del mensaje
-        offset: 80 * index,
-        index,
-      })}
+      inverted={true}
       renderItem={({ item }) => (
         <MessageBubble
           message={item}
