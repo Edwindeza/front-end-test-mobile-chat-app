@@ -4,7 +4,7 @@ import { ThemedView } from "@/shared/components/ThemedView";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { IconSymbol } from "@/shared/components/IconSymbol";
 import { UserListItem } from "@/modules/user/components/UserListItem";
-import { User } from "@/modules/user/hooks/useUser";
+import { User } from "@/modules/user/types/user.type";
 
 interface NewChatModalProps {
   visible: boolean;
@@ -14,6 +14,7 @@ interface NewChatModalProps {
   selectedUsers: string[];
   onToggleUser: (userId: string) => void;
   onCreateChat: () => void;
+  loading?: boolean;
 }
 
 export const NewChatModal: React.FC<NewChatModalProps> = ({
@@ -24,6 +25,7 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
   selectedUsers,
   onToggleUser,
   onCreateChat,
+  loading = false,
 }) => {
   const handleClose = () => {
     onClose();
@@ -69,13 +71,14 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
             <Pressable
               style={[
                 styles.createButton,
-                selectedUsers.length === 0 && styles.disabledButton,
+                (selectedUsers.length === 0 || loading) &&
+                  styles.disabledButton,
               ]}
               onPress={onCreateChat}
-              disabled={selectedUsers.length === 0}
+              disabled={selectedUsers.length === 0 || loading}
             >
               <ThemedText style={styles.createButtonText}>
-                Create Chat
+                {loading ? "Creating..." : "Create Chat"}
               </ThemedText>
             </Pressable>
           </ThemedView>

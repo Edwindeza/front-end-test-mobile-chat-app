@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { FlatList, StyleSheet, Pressable } from "react-native";
-import { useAppContext } from "@/shared/Context/AppContext";
+import { useAuth } from "@/shared/hooks/useAuth";
+import { useChatStore } from "@/modules/chat/store/useChatStore";
+import { useUsers } from "@/modules/user/hooks/useUsers";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { ThemedView } from "@/shared/components/ThemedView";
 import { ChatListItem } from "@/modules/chat/components/ChatListItem";
@@ -8,7 +10,9 @@ import { NewChatModal } from "@/modules/chat/components/NewChatModal";
 import { IconSymbol } from "@/shared/components/IconSymbol";
 
 export default function ChatsScreen() {
-  const { currentUser, users, chats, createChat } = useAppContext();
+  const { currentUser } = useAuth();
+  const { chats, createChat, loading } = useChatStore();
+  const { users } = useUsers();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
@@ -39,7 +43,7 @@ export default function ChatsScreen() {
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={styles.header}>
-        <ThemedText type="title">Chats</ThemedText>
+        <ThemedText type="title">Chats ({chats.length})</ThemedText>
         <Pressable
           style={styles.newChatButton}
           onPress={() => setModalVisible(true)}
@@ -73,6 +77,7 @@ export default function ChatsScreen() {
         selectedUsers={selectedUsers}
         onToggleUser={toggleUserSelection}
         onCreateChat={handleCreateChat}
+        loading={loading}
       />
     </ThemedView>
   );

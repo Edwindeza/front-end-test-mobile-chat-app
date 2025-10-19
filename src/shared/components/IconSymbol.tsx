@@ -32,6 +32,10 @@ const MAPPING = {
   "chevron.left": "chevron-left",
   // Send message icon
   "arrow.up.circle.fill": "send",
+  // Profile and edit icons
+  pencil: "edit",
+  "arrow.right.square": "logout",
+  checkmark: "check",
 } as Partial<
   Record<
     import("expo-symbols").SymbolViewProps["name"],

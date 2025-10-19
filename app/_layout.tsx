@@ -11,8 +11,10 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/shared/hooks/useColorScheme";
-import { AppProvider, useAppContext } from "@/shared/Context/AppContext";
+import { AppProvider } from "@/shared/Context/AppProvider";
+import { useAuth } from "@/shared/hooks/useAuth";
 import { DrizzleStudioDevTool } from "@/database/DrizzleStudio";
+import { ToastProvider } from "@/shared/components/Toast";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,7 +38,7 @@ function useProtectedRoute(isLoggedIn: boolean, loading: boolean) {
 }
 
 function RootLayoutNav() {
-  const { isLoggedIn, loading } = useAppContext();
+  const { isLoggedIn, loading } = useAuth();
 
   // Call the hook unconditionally
   useProtectedRoute(isLoggedIn, loading);
@@ -76,8 +78,10 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <AppProvider>
-        <RootLayoutNav />
-        <StatusBar style="auto" />
+        <ToastProvider>
+          <RootLayoutNav />
+          <StatusBar style="auto" />
+        </ToastProvider>
       </AppProvider>
     </ThemeProvider>
   );

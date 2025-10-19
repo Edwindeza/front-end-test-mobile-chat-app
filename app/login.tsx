@@ -1,27 +1,11 @@
 import React from "react";
-import { StyleSheet, FlatList, SafeAreaView, Alert } from "react-native";
-import { useRouter } from "expo-router";
+import { StyleSheet, SafeAreaView } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { useAppContext } from "@/shared/Context/AppContext";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { ThemedView } from "@/shared/components/ThemedView";
-import { UserListItem } from "@/modules/user/components/UserListItem";
+import { LoginContainer } from "@/src/modules/user/containers/LoginContainer";
 
 export default function LoginScreen() {
-  const { users, login } = useAppContext();
-  const router = useRouter();
-
-  const handleUserSelect = async (userId: string) => {
-    // Better handle the error case here
-    // and i added await here to wait for the login to complete
-    const loggedIn = await login(userId);
-    if (!loggedIn) {
-      Alert.alert("Error", "Failed to login");
-      return;
-    }
-    router.replace("/(tabs)");
-  };
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="auto" />
@@ -33,17 +17,7 @@ export default function LoginScreen() {
           </ThemedText>
         </ThemedView>
 
-        <FlatList
-          data={users}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <UserListItem
-              user={item}
-              onSelect={() => handleUserSelect(item.id)}
-            />
-          )}
-          contentContainerStyle={styles.listContainer}
-        />
+        <LoginContainer />
       </ThemedView>
     </SafeAreaView>
   );

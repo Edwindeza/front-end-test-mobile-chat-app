@@ -16,6 +16,16 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
 }) => {
   const flatListRef = useRef<FlatList>(null);
 
+  if (messages.length === 0) {
+    return (
+      <ThemedView style={styles.emptyContainer}>
+        <ThemedText style={styles.emptyText}>
+          No messages yet. Say hello!
+        </ThemedText>
+      </ThemedView>
+    );
+  }
+
   return (
     <FlatList
       ref={flatListRef}
@@ -34,11 +44,6 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
         />
       )}
       contentContainerStyle={styles.messagesContainer}
-      ListEmptyComponent={() => (
-        <ThemedView style={styles.emptyContainer}>
-          <ThemedText>No messages yet. Say hello!</ThemedText>
-        </ThemedView>
-      )}
     />
   );
 };
@@ -53,5 +58,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    opacity: 0.6,
+    textAlign: "center",
   },
 });

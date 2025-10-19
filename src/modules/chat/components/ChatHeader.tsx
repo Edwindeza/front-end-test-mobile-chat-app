@@ -4,8 +4,7 @@ import { Stack, useRouter } from "expo-router";
 import { Avatar } from "@/shared/components/Avatar";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { IconSymbol } from "@/shared/components/IconSymbol";
-import { User } from "@/modules/user/hooks/useUserDb";
-
+import { User } from "@/modules/user/types/user.type";
 interface ChatHeaderProps {
   chatParticipants: User[];
   chatName: string;

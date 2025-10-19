@@ -1,14 +1,19 @@
-
-export interface Chat {
-  id: string;
-  participants: string[];
-  messages: Message[];
-  lastMessage?: Message;
-}
-
-export interface Message {
+export type Message = {
   id: string;
   senderId: string;
   text: string;
   timestamp: number;
-}
+};
+
+export type Chat = {
+  id: string;
+  participants: string[];
+  messages: Message[];
+  lastMessage?: Message;
+};
+
+export type ChatSummary = {
+  id: string;
+  participants: string[];
+  lastMessage?: Message;
+};

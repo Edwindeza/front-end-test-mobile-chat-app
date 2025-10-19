@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
-import { useAppContext } from '@/shared/Context/AppContext';
+import { useAuth } from '@/shared/hooks/useAuth';
+import { useChatStore } from '@/modules/chat/store/useChatStore';
+import { useUsers } from '@/modules/user/hooks/useUsers';
 import { Chat } from '@/modules/chat/types/chat.type';
-import { User } from '@/modules/user/hooks/useUserDb';
+import { User } from '@/src/modules/user/types/user.type';
 
 export const useChatRoomContainer = () => {
   const { chatId } = useLocalSearchParams<{ chatId: string }>();
-  const { currentUser, users, chats, sendMessage } = useAppContext();
+  const { currentUser } = useAuth();
+  const { chats, sendMessage } = useChatStore();
+  const { users } = useUsers();
   const [messageText, setMessageText] = useState('');
 
   const chat = chats.find((c: Chat) => c.id === chatId);
