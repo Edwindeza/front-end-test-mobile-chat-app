@@ -3,6 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { Message } from "@/src/modules/chat/types/chat.type";
 import { useColorScheme } from "@/src/shared/hooks/useColorScheme";
+import { MessageStatusIndicator } from "./MessageStatusIndicator";
 
 interface MessageBubbleProps {
   message: Message;
@@ -59,6 +60,10 @@ export function MessageBubble({
           <ThemedText style={styles.timeText}>
             {formatTime(message.timestamp)}
           </ThemedText>
+          <MessageStatusIndicator
+            status={message.status}
+            isCurrentUser={isCurrentUser}
+          />
         </View>
       </View>
     </View>

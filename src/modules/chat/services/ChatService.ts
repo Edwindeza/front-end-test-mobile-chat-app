@@ -1,6 +1,6 @@
 import { db } from '@/shared/database/db';
 import { chats, chatParticipants, messages } from '@/shared/database/schema';
-import { eq, inArray, desc } from 'drizzle-orm';
+import { eq, inArray, desc, and, ne } from 'drizzle-orm';
 import { Chat, Message } from '@/modules/chat/types/chat.type';
 
 export class ChatService {
@@ -60,6 +60,7 @@ export class ChatService {
           senderId: message.senderId,
           text: message.text,
           timestamp: message.timestamp,
+          status: message.status as any,
         });
       }
     });
@@ -117,6 +118,7 @@ export class ChatService {
       senderId: senderId,
       text: text,
       timestamp: timestamp,
+      status: 'sent',
     });
     
     return {
@@ -124,6 +126,24 @@ export class ChatService {
       senderId,
       text,
       timestamp,
+      status: 'sent',
     };
+  }
+
+  static async markMessagesAsRead(chatId: string, currentUserId: string): Promise<void> {
+    await db.update(messages)
+      .set({ status: 'read' })
+      .where(
+        and(
+          eq(messages.chatId, chatId),
+          ne(messages.senderId, currentUserId)
+        )
+      );
+  }
+
+  static async markMessageAsRead(messageId: string): Promise<void> {
+    await db.update(messages)
+      .set({ status: 'read' })
+      .where(eq(messages.id, messageId));
   }
 }

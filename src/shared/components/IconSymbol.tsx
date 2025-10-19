@@ -16,8 +16,6 @@ const MAPPING = {
   // See SF Symbols in the SF Symbols app on Mac.
   "house.fill": "home",
   "paperplane.fill": "send",
-  "chevron.left.forwardslash.chevron.right": "code",
-  "chevron.right": "chevron-right",
   // Chat and messaging icons
   "bubble.left.and.bubble.right": "chat-bubble-outline",
   "bubble.left.and.bubble.right.fill": "chat-bubble",
@@ -30,6 +28,7 @@ const MAPPING = {
   plus: "add",
   // Navigation icons
   "chevron.left": "chevron-left",
+  "chevron.left.forwardslash.chevron.right": "code",
   "chevron.right": "chevron-right",
   // Send message icon
   "arrow.up.circle.fill": "send",
@@ -39,6 +38,9 @@ const MAPPING = {
   checkmark: "check",
   // Search icon
   magnifyingglass: "search",
+  // Message status icons
+  "checkmark.circle": "check-circle",
+  "checkmark.circle.fill": "check-circle",
 } as Partial<
   Record<
     import("expo-symbols").SymbolViewProps["name"],

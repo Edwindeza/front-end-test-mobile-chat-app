@@ -11,6 +11,7 @@ interface ChatState {
   loadChats: (currentUserId: string) => Promise<void>;
   createChat: (participantIds: string[]) => Promise<Chat | null>;
   sendMessage: (chatId: string, text: string, senderId: string) => Promise<boolean>;
+  markMessagesAsRead: (chatId: string, currentUserId: string) => Promise<void>;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
 }
@@ -90,6 +91,33 @@ export const useChatStore = create<ChatState>((set, get) => ({
       showToast('Failed to send message', 'error');
 
       return false;
+    }
+  },
+
+  markMessagesAsRead: async (chatId: string, currentUserId: string) => {
+    try {
+      await ChatService.markMessagesAsRead(chatId, currentUserId);
+
+      // Update local state to reflect the status change
+      set(state => ({
+        chats: state.chats.map(chat => {
+          if (chat.id === chatId) {
+            return {
+              ...chat,
+              messages: chat.messages.map(message => {
+                // Mark messages sent by others as read
+                if (message.senderId !== currentUserId) {
+                  return { ...message, status: 'read' as const };
+                }
+                return message;
+              }),
+            };
+          }
+          return chat;
+        }),
+      }));
+    } catch (error) {
+      console.error('Failed to mark messages as read:', error);
     }
   },
 

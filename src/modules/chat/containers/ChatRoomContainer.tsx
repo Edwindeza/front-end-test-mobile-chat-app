@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { ThemedView } from "@/shared/components/ThemedView";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { ChatMessages } from "@/modules/chat/components/ChatMessages";
@@ -15,6 +15,7 @@ import { Stack } from "expo-router";
 import { ChatHeader } from "../components/ChatHeader";
 import { useChatRoomContainer } from "../hooks/useChatRoomContainer";
 import { useUsers } from "@/modules/user/hooks/useUsers";
+import { useChatStore } from "../store/useChatStore";
 
 export const ChatRoomContainer: React.FC = () => {
   const [searchVisible, setSearchVisible] = useState(false);
@@ -31,6 +32,13 @@ export const ChatRoomContainer: React.FC = () => {
   } = useChatRoomContainer();
 
   const { users } = useUsers();
+  const { markMessagesAsRead } = useChatStore();
+
+  useEffect(() => {
+    if (chat && currentUser) {
+      markMessagesAsRead(chat.id, currentUser.id);
+    }
+  }, [chat?.id, currentUser?.id, markMessagesAsRead]);
 
   const handleSearchPress = () => {
     setSearchVisible(true);
