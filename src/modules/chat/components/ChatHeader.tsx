@@ -4,17 +4,21 @@ import { Stack, useRouter } from "expo-router";
 import { Avatar } from "@/shared/components/Avatar";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { IconSymbol } from "@/shared/components/IconSymbol";
+import { useThemeColor } from "@/shared/hooks/useThemeColor";
 import { User } from "@/modules/user/types/user.type";
 interface ChatHeaderProps {
   chatParticipants: User[];
   chatName: string;
+  onSearchPress: () => void;
 }
 
 export const ChatHeader: React.FC<ChatHeaderProps> = ({
   chatParticipants,
   chatName,
+  onSearchPress,
 }) => {
   const router = useRouter();
+  const tabIconDefaultColor = useThemeColor({}, "tabIconDefault");
 
   return (
     <Stack.Screen
@@ -29,7 +33,20 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         ),
         headerLeft: () => (
           <Pressable onPress={() => router.back()}>
-            <IconSymbol name="chevron.left" size={24} color="#007AFF" />
+            <IconSymbol
+              name="chevron.left"
+              size={24}
+              color={tabIconDefaultColor}
+            />
+          </Pressable>
+        ),
+        headerRight: () => (
+          <Pressable onPress={onSearchPress} style={styles.searchButton}>
+            <IconSymbol
+              name="magnifyingglass"
+              size={24}
+              color={tabIconDefaultColor}
+            />
           </Pressable>
         ),
       }}
@@ -43,7 +60,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-  backButton: {
-    marginLeft: "auto",
+  searchButton: {
+    padding: 8,
   },
 });

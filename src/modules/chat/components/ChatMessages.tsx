@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { FlatList, StyleSheet } from "react-native";
 import { ThemedView } from "@/shared/components/ThemedView";
 import { ThemedText } from "@/shared/components/ThemedText";
@@ -11,49 +11,49 @@ interface ChatMessagesProps {
   currentUserId: string;
 }
 
-export const ChatMessages: React.FC<ChatMessagesProps> = ({
-  chatId,
-  currentUserId,
-}) => {
-  const chats = useChatStore((state) => state.chats);
-  const chat = chats.find((c) => c.id === chatId);
-  const messages = chat?.messages || [];
-  const { users } = useUsers();
+export const ChatMessages = forwardRef<FlatList, ChatMessagesProps>(
+  ({ chatId, currentUserId }, ref) => {
+    const chats = useChatStore((state) => state.chats);
+    const chat = chats.find((c) => c.id === chatId);
+    const messages = chat?.messages || [];
+    const { users } = useUsers();
 
-  if (messages.length === 0) {
+    if (messages.length === 0) {
+      return (
+        <ThemedView style={styles.emptyContainer}>
+          <ThemedText style={styles.emptyText}>
+            No messages yet. Say hello!
+          </ThemedText>
+        </ThemedView>
+      );
+    }
+
     return (
-      <ThemedView style={styles.emptyContainer}>
-        <ThemedText style={styles.emptyText}>
-          No messages yet. Say hello!
-        </ThemedText>
-      </ThemedView>
+      <FlatList
+        ref={ref}
+        data={messages}
+        keyExtractor={(item) => item.id}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        windowSize={10}
+        initialNumToRender={15}
+        updateCellsBatchingPeriod={50}
+        inverted={true}
+        renderItem={({ item }) => {
+          const sender = users.find((u) => u.id === item.senderId);
+          return (
+            <MessageBubble
+              message={item}
+              isCurrentUser={item.senderId === currentUserId}
+              senderName={sender?.name || "Unknown"}
+            />
+          );
+        }}
+        contentContainerStyle={styles.messagesContainer}
+      />
     );
   }
-
-  return (
-    <FlatList
-      data={messages}
-      keyExtractor={(item) => item.id}
-      removeClippedSubviews={true}
-      maxToRenderPerBatch={10}
-      windowSize={10}
-      initialNumToRender={15}
-      updateCellsBatchingPeriod={50}
-      inverted={true}
-      renderItem={({ item }) => {
-        const sender = users.find((u) => u.id === item.senderId);
-        return (
-          <MessageBubble
-            message={item}
-            isCurrentUser={item.senderId === currentUserId}
-            senderName={sender?.name || "Unknown"}
-          />
-        );
-      }}
-      contentContainerStyle={styles.messagesContainer}
-    />
-  );
-};
+);
 
 const styles = StyleSheet.create({
   messagesContainer: {

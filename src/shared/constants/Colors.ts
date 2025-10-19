@@ -4,7 +4,7 @@
  */
 
 const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const tintColorDark = 'rgb(17, 24, 39)';
 
 export const Colors = {
   light: {
@@ -16,15 +16,20 @@ export const Colors = {
     tabIconSelected: tintColorLight,
     tabBarBackground: '#FFFFFF',
     tabBarBorder: '#E1E1E1',
+    border: '#E1E1E1',
+    disabledButtonBg: 'red',
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    text: '#F2F2F7',
+    background: '#000000',
     tint: tintColorDark,
-    icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
     tabBarBackground: '#1C1C1E',
     tabBarBorder: '#2C2C2E',
+    border: '#2C2C2E',
+    searchInputBg: '#2C2C2E',
+    messageBubbleBg: '#3A3A3C', 
+    disabledButtonBg: 'rgb(17, 24, 39)',
   },
 };
