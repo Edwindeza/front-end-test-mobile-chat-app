@@ -33,12 +33,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   const borderColor = useThemeColor({}, "border");
   const tintColor = useThemeColor({}, "tint");
   const tabIconDefault = useThemeColor({}, "tabIconDefault");
-
-  // Dark mode specific colors for better contrast
-  const isDark = useThemeColor({}, "background") === "#000000";
-  const searchInputBg = isDark ? "#1C1C1E" : tabIconDefault;
-  const messageBubbleBg = isDark ? "#2C2C2E" : tabIconDefault;
-  const disabledButtonBg = isDark ? "#3A3A3C" : tabIconDefault;
+  const disabledButtonBg = useThemeColor({}, "disabledButtonBg");
+  const messageBubbleBg = useThemeColor({}, "messageBubbleBg");
+  const searchInputBg = useThemeColor({}, "searchInputBg");
+  const isDark = useThemeColor({}, "background") === "rgb(17, 24, 39)";
 
   const filteredMessages = useMemo(() => {
     if (!query.trim()) return [];

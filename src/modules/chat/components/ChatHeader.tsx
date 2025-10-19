@@ -18,7 +18,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   onSearchPress,
 }) => {
   const router = useRouter();
-  const tabIconDefaultColor = useThemeColor({}, "tabIconDefault");
+  const headerIconColor = useThemeColor({}, "headerIcon");
 
   return (
     <Stack.Screen
@@ -33,11 +33,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         ),
         headerLeft: () => (
           <Pressable onPress={() => router.back()}>
-            <IconSymbol
-              name="chevron.left"
-              size={24}
-              color={tabIconDefaultColor}
-            />
+            <IconSymbol name="chevron.left" size={24} color={headerIconColor} />
           </Pressable>
         ),
         headerRight: () => (
@@ -45,7 +41,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
             <IconSymbol
               name="magnifyingglass"
               size={24}
-              color={tabIconDefaultColor}
+              color={headerIconColor}
             />
           </Pressable>
         ),
