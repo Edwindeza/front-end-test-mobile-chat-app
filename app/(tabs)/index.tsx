@@ -64,6 +64,11 @@ export default function ChatsScreen() {
         )}
         ListEmptyComponent={renderEmptyComponent}
         contentContainerStyle={styles.listContainer}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        windowSize={10}
+        initialNumToRender={15}
+        updateCellsBatchingPeriod={50}
       />
 
       <NewChatModal

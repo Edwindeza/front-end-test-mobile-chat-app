@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { Modal, Pressable, StyleSheet, Animated } from "react-native";
+import { Modal, Pressable, StyleSheet, Animated, Platform } from "react-native";
 import { ThemedView } from "@/shared/components/ThemedView";
 import { ThemedText } from "@/shared/components/ThemedText";
 
@@ -106,7 +106,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
-    paddingBottom: 100,
+    ...Platform.select({
+      ios: {
+        paddingBottom: 100,
+      },
+      android: {
+        paddingBottom: 40,
+      },
+    }),
   },
   toast: {
     paddingHorizontal: 20,

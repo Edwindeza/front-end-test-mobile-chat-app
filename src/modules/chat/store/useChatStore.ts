@@ -75,7 +75,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
           if (chat.id === chatId) {
             return {
               ...chat,
-              messages: [...chat.messages, newMessage],
+              messages: [newMessage, ...chat.messages],
               lastMessage: newMessage,
             };
           }

@@ -5,8 +5,10 @@ export const useUsers = () => {
   const { users, loading, error, loadUsers } = useUserStore();
 
   React.useEffect(() => {
-    loadUsers();
-  }, [loadUsers]);
+    if (users.length === 0 && !loading) {
+      loadUsers();
+    }
+  }, [users.length, loading]);
 
   return {
     users,

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import { View, StyleSheet, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "@/shared/components/Avatar";
@@ -12,11 +12,11 @@ interface ChatListItemProps {
   users: User[];
 }
 
-export function ChatListItem({
+export const ChatListItem = React.memo<ChatListItemProps>(({
   chat,
   currentUserId,
   users,
-}: ChatListItemProps) {
+}) => {
   const navigation = useNavigation();
 
   const otherParticipants = useMemo(() => {
@@ -38,9 +38,9 @@ export function ChatListItem({
     }
   }, [otherParticipants]);
 
-  const handlePress = () => {
+  const handlePress = useCallback(() => {
     navigation.navigate("ChatRoom" as never, { chatId: chat.id } as never);
-  };
+  }, [navigation, chat.id]);
 
   const timeString = useMemo(() => {
     if (!chat.lastMessage) return "";
@@ -65,7 +65,17 @@ export function ChatListItem({
     }
   }, [chat.lastMessage]);
 
-  const isCurrentUserLastSender = chat.lastMessage?.senderId === currentUserId;
+  const isCurrentUserLastSender = useMemo(() => 
+    chat.lastMessage?.senderId === currentUserId,
+    [chat.lastMessage?.senderId, currentUserId]
+  );
+
+  const lastMessageText = useMemo(() => {
+    if (!chat.lastMessage) return "";
+    return isCurrentUserLastSender 
+      ? `You: ${chat.lastMessage.text}`
+      : chat.lastMessage.text;
+  }, [chat.lastMessage, isCurrentUserLastSender]);
 
   return (
     <Pressable style={styles.container} onPress={handlePress}>
@@ -84,7 +94,7 @@ export function ChatListItem({
           )}
         </View>
         <View style={styles.bottomRow}>
-          {chat.lastMessage && (
+          {lastMessageText && (
             <ThemedText
               numberOfLines={1}
               style={[
@@ -92,15 +102,14 @@ export function ChatListItem({
                 isCurrentUserLastSender && styles.currentUserMessage,
               ]}
             >
-              {isCurrentUserLastSender && "You: "}
-              {chat.lastMessage.text}
+              {lastMessageText}
             </ThemedText>
           )}
         </View>
       </View>
     </Pressable>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

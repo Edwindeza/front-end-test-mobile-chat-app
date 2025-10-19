@@ -48,7 +48,7 @@ export const ChatRoomContainer: React.FC = () => {
           headerLeft: () => null,
         }}
       />
-      <ChatMessages messages={chat.messages} currentUserId={currentUser.id} />
+      <ChatMessages chatId={chat.id} currentUserId={currentUser.id} />
       <ChatInput
         messageText={messageText}
         onMessageTextChange={setMessageText}

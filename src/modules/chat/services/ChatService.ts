@@ -1,6 +1,6 @@
 import { db } from '@/shared/database/db';
 import { chats, chatParticipants, messages } from '@/shared/database/schema';
-import { eq, inArray } from 'drizzle-orm';
+import { eq, inArray, desc } from 'drizzle-orm';
 import { Chat, Message } from '@/modules/chat/types/chat.type';
 
 export class ChatService {
@@ -31,7 +31,7 @@ export class ChatService {
       .select()
       .from(messages)
       .where(inArray(messages.chatId, chatIds))
-      .orderBy(messages.timestamp);
+      .orderBy(desc(messages.timestamp));
 
     console.timeEnd('ChatService.getUserChats');
 
@@ -106,11 +106,11 @@ export class ChatService {
     };
   }
 
+
   static async sendMessage(chatId: string, text: string, senderId: string): Promise<Message> {
     const messageId = `msg${Date.now()}`;
     const timestamp = Date.now();
     
-    // Insert new message
     await db.insert(messages).values({
       id: messageId,
       chatId: chatId,

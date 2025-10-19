@@ -1,20 +1,24 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import { FlatList, StyleSheet } from "react-native";
 import { ThemedView } from "@/shared/components/ThemedView";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { MessageBubble } from "@/modules/chat/components/MessageBubble";
-import { Message } from "@/modules/chat/types/chat.type";
+import { useChatStore } from "@/modules/chat/store/useChatStore";
+import { useUsers } from "@/modules/user/hooks/useUsers";
 
 interface ChatMessagesProps {
-  messages: Message[];
+  chatId: string;
   currentUserId: string;
 }
 
 export const ChatMessages: React.FC<ChatMessagesProps> = ({
-  messages,
+  chatId,
   currentUserId,
 }) => {
-  const flatListRef = useRef<FlatList>(null);
+  const chats = useChatStore((state) => state.chats);
+  const chat = chats.find((c) => c.id === chatId);
+  const messages = chat?.messages || [];
+  const { users } = useUsers();
 
   if (messages.length === 0) {
     return (
@@ -28,8 +32,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
 
   return (
     <FlatList
-      ref={flatListRef}
-      data={messages.slice().reverse()}
+      data={messages}
       keyExtractor={(item) => item.id}
       removeClippedSubviews={true}
       maxToRenderPerBatch={10}
@@ -37,12 +40,16 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
       initialNumToRender={15}
       updateCellsBatchingPeriod={50}
       inverted={true}
-      renderItem={({ item }) => (
-        <MessageBubble
-          message={item}
-          isCurrentUser={item.senderId === currentUserId}
-        />
-      )}
+      renderItem={({ item }) => {
+        const sender = users.find((u) => u.id === item.senderId);
+        return (
+          <MessageBubble
+            message={item}
+            isCurrentUser={item.senderId === currentUserId}
+            senderName={sender?.name || "Unknown"}
+          />
+        );
+      }}
       contentContainerStyle={styles.messagesContainer}
     />
   );

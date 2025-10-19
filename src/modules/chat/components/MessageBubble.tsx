@@ -7,9 +7,14 @@ import { useColorScheme } from "@/src/shared/hooks/useColorScheme";
 interface MessageBubbleProps {
   message: Message;
   isCurrentUser: boolean;
+  senderName: string;
 }
 
-export function MessageBubble({ message, isCurrentUser }: MessageBubbleProps) {
+export function MessageBubble({
+  message,
+  isCurrentUser,
+  senderName,
+}: MessageBubbleProps) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
 
@@ -25,6 +30,9 @@ export function MessageBubble({ message, isCurrentUser }: MessageBubbleProps) {
         isCurrentUser ? styles.selfContainer : styles.otherContainer,
       ]}
     >
+      {!isCurrentUser && (
+        <ThemedText style={styles.senderName}>{senderName}</ThemedText>
+      )}
       <View
         style={[
           styles.bubble,
@@ -67,6 +75,12 @@ const styles = StyleSheet.create({
   },
   otherContainer: {
     alignSelf: "flex-start",
+  },
+  senderName: {
+    fontSize: 12,
+    opacity: 0.7,
+    marginBottom: 2,
+    marginLeft: 4,
   },
   bubble: {
     borderRadius: 16,
