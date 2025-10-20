@@ -1,10 +1,12 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect } from "react";
 import { FlatList, StyleSheet } from "react-native";
 import { ThemedView } from "@/shared/components/ThemedView";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { MessageBubble } from "@/modules/chat/components/MessageBubble";
+import { LoadingSpinner } from "@/modules/chat/components/LoadingSpinner";
 import { useChatStore } from "@/modules/chat/store/useChatStore";
 import { useUsers } from "@/modules/user/hooks/useUsers";
+import { useMessagesPagination } from "@/modules/chat/hooks/useMessagesPagination";
 
 interface ChatMessagesProps {
   chatId: string;
@@ -14,13 +16,22 @@ interface ChatMessagesProps {
 
 export const ChatMessages = forwardRef<FlatList, ChatMessagesProps>(
   ({ chatId, currentUserId, onEditMessage }, ref) => {
-    const chats = useChatStore((state) => state.chats);
-    const { deleteMessage, editMessage } = useChatStore();
-    const chat = chats.find((c) => c.id === chatId);
-    const messages = chat?.messages || [];
+    const { deleteMessage } = useChatStore();
     const { users } = useUsers();
+    const { messages, loading, loadMore, addNewMessage } =
+      useMessagesPagination({ chatId, pageSize: 12 });
 
-    if (messages.length === 0) {
+    useEffect(() => {
+      const chats = useChatStore.getState().chats;
+      const chat = chats.find((c) => c.id === chatId);
+      const latestMessage = chat?.messages?.[0];
+
+      if (latestMessage && !messages.find((m) => m.id === latestMessage.id)) {
+        addNewMessage(latestMessage);
+      }
+    }, [chatId, messages.length, addNewMessage]);
+
+    if (messages.length === 0 && !loading) {
       return (
         <ThemedView style={styles.emptyContainer}>
           <ThemedText style={styles.emptyText}>
@@ -36,11 +47,20 @@ export const ChatMessages = forwardRef<FlatList, ChatMessagesProps>(
         data={messages}
         keyExtractor={(item) => item.id}
         removeClippedSubviews={true}
-        maxToRenderPerBatch={10}
-        windowSize={10}
-        initialNumToRender={15}
+        maxToRenderPerBatch={8}
+        windowSize={15}
+        initialNumToRender={20}
         updateCellsBatchingPeriod={50}
         inverted={true}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.3}
+        maintainVisibleContentPosition={{
+          minIndexForVisible: 0,
+          autoscrollToTopThreshold: 10,
+        }}
+        ListFooterComponent={
+          loading ? <LoadingSpinner message="Loading messages..." /> : null
+        }
         renderItem={({ item }) => {
           const sender = users.find((u) => u.id === item.senderId);
           return (

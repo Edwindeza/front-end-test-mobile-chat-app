@@ -5,7 +5,7 @@ import { useUsers } from "@/modules/user/hooks/useUsers";
 
 export const useChatsListContainer = () => {
   const { currentUser } = useAuth();
-  const { chats, createChat, loading } = useChatStore();
+  const { createChat, loading } = useChatStore();
   const { users } = useUsers();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -38,7 +38,6 @@ export const useChatsListContainer = () => {
 
   return {
     currentUser,
-    chats,
     users,
     modalVisible,
     selectedUsers,

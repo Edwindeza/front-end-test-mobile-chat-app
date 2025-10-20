@@ -5,12 +5,13 @@ import { ThemedText } from "@/shared/components/ThemedText";
 import { IconSymbol } from "@/shared/components/IconSymbol";
 import { ChatListItem } from "../components/ChatListItem";
 import { NewChatModal } from "../components/NewChatModal";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 import { useChatsListContainer } from "../hooks/useChatsListContainer";
+import { useChatsPagination } from "../hooks/useChatsPagination";
 
 export const ChatsListContainer = () => {
   const {
     currentUser,
-    chats,
     users,
     modalVisible,
     selectedUsers,
@@ -20,6 +21,12 @@ export const ChatsListContainer = () => {
     openNewChatModal,
     closeNewChatModal,
   } = useChatsListContainer();
+
+  const {
+    chats,
+    loading: paginationLoading,
+    loadMore,
+  } = useChatsPagination({ pageSize: 20 });
 
   const renderEmptyComponent = () => (
     <ThemedView style={styles.emptyContainer}>
@@ -50,10 +57,17 @@ export const ChatsListContainer = () => {
         ListEmptyComponent={renderEmptyComponent}
         contentContainerStyle={styles.listContainer}
         removeClippedSubviews={true}
-        maxToRenderPerBatch={10}
-        windowSize={10}
-        initialNumToRender={15}
-        updateCellsBatchingPeriod={50}
+        maxToRenderPerBatch={8}
+        windowSize={12}
+        initialNumToRender={12}
+        updateCellsBatchingPeriod={30}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.3}
+        ListFooterComponent={
+          paginationLoading ? (
+            <LoadingSpinner message="Loading chats..." />
+          ) : null
+        }
       />
 
       <NewChatModal
