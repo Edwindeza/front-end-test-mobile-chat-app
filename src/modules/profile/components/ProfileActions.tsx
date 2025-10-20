@@ -26,7 +26,9 @@ export const ProfileActions: React.FC<ProfileActionsProps> = ({
 
   return (
     <ThemedView style={styles.section}>
-      <ThemedText type="subtitle">Actions</ThemedText>
+      <ThemedText style={styles.titleText} type="subtitle">
+        Actions
+      </ThemedText>
 
       {!isEditing && (
         <Pressable
@@ -57,6 +59,11 @@ const styles = StyleSheet.create({
   section: {
     paddingHorizontal: 20,
     paddingVertical: 16,
+  },
+  titleText: {
+    fontSize: 20,
+    fontWeight: "500",
+    marginBottom: 16,
   },
   actionButton: {
     flexDirection: "row",

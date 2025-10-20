@@ -4,6 +4,7 @@ import { ThemedText } from "@/shared/components/ThemedText";
 import { ChatMessages } from "@/modules/chat/components/ChatMessages";
 import { ChatInput } from "@/modules/chat/components/ChatInput";
 import { SearchModal } from "@/modules/chat/components/SearchModal";
+import { MessageEditModal } from "@/modules/chat/components/MessageEditModal";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -19,6 +20,11 @@ import { useChatStore } from "../store/useChatStore";
 
 export const ChatRoomContainer: React.FC = () => {
   const [searchVisible, setSearchVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editingMessage, setEditingMessage] = useState<{
+    id: string;
+    text: string;
+  } | null>(null);
   const messagesRef = useRef<FlatList>(null);
 
   const {
@@ -32,7 +38,7 @@ export const ChatRoomContainer: React.FC = () => {
   } = useChatRoomContainer();
 
   const { users } = useUsers();
-  const { markMessagesAsRead } = useChatStore();
+  const { markMessagesAsRead, editMessage } = useChatStore();
 
   useEffect(() => {
     if (chat && currentUser) {
@@ -55,6 +61,24 @@ export const ChatRoomContainer: React.FC = () => {
         viewPosition: 0.5,
       });
     }
+  };
+
+  const handleEditMessage = (messageId: string, currentText: string) => {
+    setEditingMessage({ id: messageId, text: currentText });
+    setEditModalVisible(true);
+  };
+
+  const handleSaveEdit = (newText: string) => {
+    if (editingMessage && chat) {
+      editMessage(editingMessage.id, newText, chat.id);
+    }
+    setEditModalVisible(false);
+    setEditingMessage(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditModalVisible(false);
+    setEditingMessage(null);
   };
 
   if (!chat || !currentUser) {
@@ -89,6 +113,7 @@ export const ChatRoomContainer: React.FC = () => {
       <ChatMessages
         chatId={chat.id}
         currentUserId={currentUser.id}
+        onEditMessage={handleEditMessage}
         ref={messagesRef}
       />
       <ChatInput
@@ -104,6 +129,13 @@ export const ChatRoomContainer: React.FC = () => {
         users={users}
         currentUserId={currentUser.id}
         onGoToMessage={handleGoToMessage}
+      />
+
+      <MessageEditModal
+        visible={editModalVisible}
+        currentText={editingMessage?.text || ""}
+        onSave={handleSaveEdit}
+        onCancel={handleCancelEdit}
       />
     </KeyboardAvoidingView>
   );

@@ -12,6 +12,8 @@ interface ChatState {
   createChat: (participantIds: string[]) => Promise<Chat | null>;
   sendMessage: (chatId: string, text: string, senderId: string) => Promise<boolean>;
   markMessagesAsRead: (chatId: string, currentUserId: string) => Promise<void>;
+  deleteMessage: (messageId: string, chatId: string) => Promise<boolean>;
+  editMessage: (messageId: string, newText: string, chatId: string) => Promise<boolean>;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
 }
@@ -98,7 +100,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
     try {
       await ChatService.markMessagesAsRead(chatId, currentUserId);
 
-      // Update local state to reflect the status change
       set(state => ({
         chats: state.chats.map(chat => {
           if (chat.id === chatId) {
@@ -118,6 +119,65 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }));
     } catch (error) {
       console.error('Failed to mark messages as read:', error);
+    }
+  },
+
+  deleteMessage: async (messageId: string, chatId: string) => {
+    try {
+      await ChatService.deleteMessage(messageId);
+
+      set(state => ({
+        chats: state.chats.map(chat => {
+          if (chat.id === chatId) {
+            const updatedMessages = chat.messages.filter(msg => msg.id !== messageId);
+            const newLastMessage = updatedMessages.length > 0 ? updatedMessages[updatedMessages.length - 1] : undefined;
+            
+            return {
+              ...chat,
+              messages: updatedMessages,
+              lastMessage: newLastMessage,
+            };
+          }
+          return chat;
+        }),
+      }));
+
+      showToast('Message deleted', 'success');
+      return true;
+    } catch (error) {
+      showToast('Failed to delete message', 'error');
+      return false;
+    }
+  },
+
+  editMessage: async (messageId: string, newText: string, chatId: string) => {
+    if (!newText.trim()) return false;
+
+    try {
+      await ChatService.editMessage(messageId, newText);
+
+      set(state => ({
+        chats: state.chats.map(chat => {
+          if (chat.id === chatId) {
+            return {
+              ...chat,
+              messages: chat.messages.map(message => {
+                if (message.id === messageId) {
+                  return { ...message, text: newText };
+                }
+                return message;
+              }),
+            };
+          }
+          return chat;
+        }),
+      }));
+
+      showToast('Message edited', 'success');
+      return true;
+    } catch (error) {
+      showToast('Failed to edit message', 'error');
+      return false;
     }
   },
 

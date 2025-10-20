@@ -9,11 +9,13 @@ import { useUsers } from "@/modules/user/hooks/useUsers";
 interface ChatMessagesProps {
   chatId: string;
   currentUserId: string;
+  onEditMessage: (messageId: string, currentText: string) => void;
 }
 
 export const ChatMessages = forwardRef<FlatList, ChatMessagesProps>(
-  ({ chatId, currentUserId }, ref) => {
+  ({ chatId, currentUserId, onEditMessage }, ref) => {
     const chats = useChatStore((state) => state.chats);
+    const { deleteMessage, editMessage } = useChatStore();
     const chat = chats.find((c) => c.id === chatId);
     const messages = chat?.messages || [];
     const { users } = useUsers();
@@ -46,6 +48,12 @@ export const ChatMessages = forwardRef<FlatList, ChatMessagesProps>(
               message={item}
               isCurrentUser={item.senderId === currentUserId}
               senderName={sender?.name || "Unknown"}
+              onEdit={(messageId, currentText) => {
+                onEditMessage(messageId, currentText);
+              }}
+              onDelete={(messageId) => {
+                deleteMessage(messageId, chatId);
+              }}
             />
           );
         }}

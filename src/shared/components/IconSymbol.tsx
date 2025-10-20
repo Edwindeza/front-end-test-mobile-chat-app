@@ -26,21 +26,17 @@ const MAPPING = {
   xmark: "close",
   // Plus icon
   plus: "add",
-  // Navigation icons
   "chevron.left": "chevron-left",
   "chevron.left.forwardslash.chevron.right": "code",
   "chevron.right": "chevron-right",
-  // Send message icon
   "arrow.up.circle.fill": "send",
-  // Profile and edit icons
   pencil: "edit",
   "arrow.right.square": "logout",
   checkmark: "check",
-  // Search icon
   magnifyingglass: "search",
-  // Message status icons
   "checkmark.circle": "check-circle",
   "checkmark.circle.fill": "check-circle",
+  trash: "delete",
 } as Partial<
   Record<
     import("expo-symbols").SymbolViewProps["name"],

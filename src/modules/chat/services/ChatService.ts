@@ -5,7 +5,6 @@ import { Chat, Message } from '@/modules/chat/types/chat.type';
 
 export class ChatService {
   static async getUserChats(currentUserId: string): Promise<Chat[]> {
-    console.time('ChatService.getUserChats');
 
     const userChats = await db
       .select({ chatId: chatParticipants.chatId })
@@ -15,7 +14,6 @@ export class ChatService {
     const chatIds = userChats.map(row => row.chatId);
 
     if (chatIds.length === 0) {
-      console.timeEnd('ChatService.getUserChats');
       return [];
     }
 
@@ -32,8 +30,6 @@ export class ChatService {
       .from(messages)
       .where(inArray(messages.chatId, chatIds))
       .orderBy(desc(messages.timestamp));
-
-    console.timeEnd('ChatService.getUserChats');
 
     const chatMap = new Map<string, {
       participants: Set<string>;
@@ -81,7 +77,6 @@ export class ChatService {
       };
     });
 
-    console.log(`ChatService: Loaded ${loadedChats.length} chats`);
     return loadedChats;
   }
 
@@ -144,6 +139,17 @@ export class ChatService {
   static async markMessageAsRead(messageId: string): Promise<void> {
     await db.update(messages)
       .set({ status: 'read' })
+      .where(eq(messages.id, messageId));
+  }
+
+  static async deleteMessage(messageId: string): Promise<void> {
+    await db.delete(messages)
+      .where(eq(messages.id, messageId));
+  }
+
+  static async editMessage(messageId: string, newText: string): Promise<void> {
+    await db.update(messages)
+      .set({ text: newText })
       .where(eq(messages.id, messageId));
   }
 }

@@ -4,17 +4,22 @@ import { ThemedText } from "@/shared/components/ThemedText";
 import { Message } from "@/src/modules/chat/types/chat.type";
 import { useColorScheme } from "@/src/shared/hooks/useColorScheme";
 import { MessageStatusIndicator } from "./MessageStatusIndicator";
+import { MessageActions } from "./MessageActions";
 
 interface MessageBubbleProps {
   message: Message;
   isCurrentUser: boolean;
   senderName: string;
+  onEdit: (messageId: string, currentText: string) => void;
+  onDelete: (messageId: string) => void;
 }
 
 export function MessageBubble({
   message,
   isCurrentUser,
   senderName,
+  onEdit,
+  onDelete,
 }: MessageBubbleProps) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -25,48 +30,55 @@ export function MessageBubble({
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        isCurrentUser ? styles.selfContainer : styles.otherContainer,
-      ]}
+    <MessageActions
+      message={message}
+      isCurrentUser={isCurrentUser}
+      onEdit={onEdit}
+      onDelete={onDelete}
     >
-      {!isCurrentUser && (
-        <ThemedText style={styles.senderName}>{senderName}</ThemedText>
-      )}
       <View
         style={[
-          styles.bubble,
-          isCurrentUser
-            ? [
-                styles.selfBubble,
-                { backgroundColor: isDark ? "#235A4A" : "#DCF8C6" },
-              ]
-            : [
-                styles.otherBubble,
-                { backgroundColor: isDark ? "#2A2C33" : "#FFFFFF" },
-              ],
+          styles.container,
+          isCurrentUser ? styles.selfContainer : styles.otherContainer,
         ]}
       >
-        <ThemedText
+        {!isCurrentUser && (
+          <ThemedText style={styles.senderName}>{senderName}</ThemedText>
+        )}
+        <View
           style={[
-            styles.messageText,
-            isCurrentUser && !isDark && styles.selfMessageText,
+            styles.bubble,
+            isCurrentUser
+              ? [
+                  styles.selfBubble,
+                  { backgroundColor: isDark ? "#235A4A" : "#DCF8C6" },
+                ]
+              : [
+                  styles.otherBubble,
+                  { backgroundColor: isDark ? "#2A2C33" : "#FFFFFF" },
+                ],
           ]}
         >
-          {message.text}
-        </ThemedText>
-        <View style={styles.timeContainer}>
-          <ThemedText style={styles.timeText}>
-            {formatTime(message.timestamp)}
+          <ThemedText
+            style={[
+              styles.messageText,
+              isCurrentUser && !isDark && styles.selfMessageText,
+            ]}
+          >
+            {message.text}
           </ThemedText>
-          <MessageStatusIndicator
-            status={message.status}
-            isCurrentUser={isCurrentUser}
-          />
+          <View style={styles.timeContainer}>
+            <ThemedText style={styles.timeText}>
+              {formatTime(message.timestamp)}
+            </ThemedText>
+            <MessageStatusIndicator
+              status={message.status}
+              isCurrentUser={isCurrentUser}
+            />
+          </View>
         </View>
       </View>
-    </View>
+    </MessageActions>
   );
 }
 
