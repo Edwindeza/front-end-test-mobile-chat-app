@@ -5,6 +5,8 @@ import { Message } from "@/src/modules/chat/types/chat.type";
 import { useColorScheme } from "@/src/shared/hooks/useColorScheme";
 import { MessageStatusIndicator } from "./MessageStatusIndicator";
 import { MessageActions } from "./MessageActions";
+import { MediaMessage } from "@/modules/media/components/MediaMessage";
+import { useThemeColor } from "@/shared/hooks/useThemeColor";
 
 interface MessageBubbleProps {
   message: Message;
@@ -23,6 +25,9 @@ export function MessageBubble({
 }: MessageBubbleProps) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+
+  const selfBubbleBg = useThemeColor({}, "messageBubbleBg");
+  const otherBubbleBg = useThemeColor({}, "background");
 
   const formatTime = (timestamp: number) => {
     const date = new Date(timestamp);
@@ -49,24 +54,32 @@ export function MessageBubble({
           style={[
             styles.bubble,
             isCurrentUser
-              ? [
-                  styles.selfBubble,
-                  { backgroundColor: isDark ? "#235A4A" : "#DCF8C6" },
-                ]
-              : [
-                  styles.otherBubble,
-                  { backgroundColor: isDark ? "#2A2C33" : "#FFFFFF" },
-                ],
+              ? [styles.selfBubble, { backgroundColor: selfBubbleBg }]
+              : [styles.otherBubble, { backgroundColor: otherBubbleBg }],
           ]}
         >
-          <ThemedText
-            style={[
-              styles.messageText,
-              isCurrentUser && !isDark && styles.selfMessageText,
-            ]}
-          >
-            {message.text}
-          </ThemedText>
+          {message.media && (
+            <MediaMessage
+              media={{
+                ...message.media,
+                status: "uploaded" as const,
+              }}
+              isCurrentUser={isCurrentUser}
+              caption={message.text}
+            />
+          )}
+
+          {message.text && !message.media && (
+            <ThemedText
+              style={[
+                styles.messageText,
+                isCurrentUser && !isDark && styles.selfMessageText,
+              ]}
+            >
+              {message.text}
+            </ThemedText>
+          )}
+
           <View style={styles.timeContainer}>
             <ThemedText style={styles.timeText}>
               {formatTime(message.timestamp)}

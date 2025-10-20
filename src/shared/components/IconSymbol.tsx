@@ -16,15 +16,11 @@ const MAPPING = {
   // See SF Symbols in the SF Symbols app on Mac.
   "house.fill": "home",
   "paperplane.fill": "send",
-  // Chat and messaging icons
   "bubble.left.and.bubble.right": "chat-bubble-outline",
   "bubble.left.and.bubble.right.fill": "chat-bubble",
-  // Person and profile icons
   "person.circle": "person-outline",
   "person.circle.fill": "person",
-  // Close/X icon
   xmark: "close",
-  // Plus icon
   plus: "add",
   "chevron.left": "chevron-left",
   "chevron.left.forwardslash.chevron.right": "code",

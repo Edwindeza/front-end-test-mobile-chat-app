@@ -12,104 +12,107 @@ interface ChatListItemProps {
   users: User[];
 }
 
-export const ChatListItem = React.memo<ChatListItemProps>(({
-  chat,
-  currentUserId,
-  users,
-}) => {
-  const navigation = useNavigation();
+export const ChatListItem = React.memo<ChatListItemProps>(
+  ({ chat, currentUserId, users }) => {
+    const navigation = useNavigation();
 
-  const otherParticipants = useMemo(() => {
-    return chat.participants
-      .filter((id) => id !== currentUserId)
-      .map((id) => users.find((user) => user.id === id))
-      .filter(Boolean) as User[];
-  }, [chat.participants, currentUserId, users]);
+    const otherParticipants = useMemo(() => {
+      return chat.participants
+        .filter((id) => id !== currentUserId)
+        .map((id) => users.find((user) => user.id === id))
+        .filter(Boolean) as User[];
+    }, [chat.participants, currentUserId, users]);
 
-  const chatName = useMemo(() => {
-    if (otherParticipants.length === 0) {
-      return "No participants";
-    } else if (otherParticipants.length === 1) {
-      return otherParticipants[0].name;
-    } else {
-      return `${otherParticipants[0].name} & ${
-        otherParticipants.length - 1
-      } other${otherParticipants.length > 2 ? "s" : ""}`;
-    }
-  }, [otherParticipants]);
+    const chatName = useMemo(() => {
+      if (otherParticipants.length === 0) {
+        return "No participants";
+      } else if (otherParticipants.length === 1) {
+        return otherParticipants[0].name;
+      } else {
+        return `${otherParticipants[0].name} & ${
+          otherParticipants.length - 1
+        } other${otherParticipants.length > 2 ? "s" : ""}`;
+      }
+    }, [otherParticipants]);
 
-  const handlePress = useCallback(() => {
-    navigation.navigate("ChatRoom" as never, { chatId: chat.id } as never);
-  }, [navigation, chat.id]);
+    const handlePress = useCallback(() => {
+      navigation.navigate("ChatRoom" as never, { chatId: chat.id } as never);
+    }, [navigation, chat.id]);
 
-  const timeString = useMemo(() => {
-    if (!chat.lastMessage) return "";
+    const timeString = useMemo(() => {
+      if (!chat.lastMessage) return "";
 
-    const date = new Date(chat.lastMessage.timestamp);
-    const now = new Date();
-    const diffInDays = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
+      const date = new Date(chat.lastMessage.timestamp);
+      const now = new Date();
+      const diffInDays = Math.floor(
+        (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      if (diffInDays === 0) {
+        return date.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      } else if (diffInDays === 1) {
+        return "Yesterday";
+      } else if (diffInDays < 7) {
+        return date.toLocaleDateString([], { weekday: "short" });
+      } else {
+        return date.toLocaleDateString([], { month: "short", day: "numeric" });
+      }
+    }, [chat.lastMessage]);
+
+    const isCurrentUserLastSender = useMemo(
+      () => chat.lastMessage?.senderId === currentUserId,
+      [chat.lastMessage?.senderId, currentUserId]
     );
-
-    if (diffInDays === 0) {
-      return date.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } else if (diffInDays === 1) {
-      return "Yesterday";
-    } else if (diffInDays < 7) {
-      return date.toLocaleDateString([], { weekday: "short" });
-    } else {
-      return date.toLocaleDateString([], { month: "short", day: "numeric" });
-    }
-  }, [chat.lastMessage]);
-
-  const isCurrentUserLastSender = useMemo(() => 
-    chat.lastMessage?.senderId === currentUserId,
-    [chat.lastMessage?.senderId, currentUserId]
-  );
 
   const lastMessageText = useMemo(() => {
     if (!chat.lastMessage) return "";
-    return isCurrentUserLastSender 
+    
+    if (chat.lastMessage.media) {
+      return isCurrentUserLastSender ? "You: Photo" : "Photo";
+    }
+    
+    return isCurrentUserLastSender
       ? `You: ${chat.lastMessage.text}`
       : chat.lastMessage.text;
   }, [chat.lastMessage, isCurrentUserLastSender]);
 
-  return (
-    <Pressable style={styles.container} onPress={handlePress}>
-      <Avatar user={otherParticipants[0]} size={50} />
-      <View style={styles.contentContainer}>
-        <View style={styles.topRow}>
-          <ThemedText
-            type="defaultSemiBold"
-            numberOfLines={1}
-            style={styles.name}
-          >
-            {chatName}
-          </ThemedText>
-          {timeString && (
-            <ThemedText style={styles.time}>{timeString}</ThemedText>
-          )}
-        </View>
-        <View style={styles.bottomRow}>
-          {lastMessageText && (
+    return (
+      <Pressable style={styles.container} onPress={handlePress}>
+        <Avatar user={otherParticipants[0]} size={50} />
+        <View style={styles.contentContainer}>
+          <View style={styles.topRow}>
             <ThemedText
+              type="defaultSemiBold"
               numberOfLines={1}
-              style={[
-                styles.lastMessage,
-                isCurrentUserLastSender && styles.currentUserMessage,
-              ]}
+              style={styles.name}
             >
-              {lastMessageText}
+              {chatName}
             </ThemedText>
-          )}
+            {timeString && (
+              <ThemedText style={styles.time}>{timeString}</ThemedText>
+            )}
+          </View>
+          <View style={styles.bottomRow}>
+            {lastMessageText && (
+              <ThemedText
+                numberOfLines={1}
+                style={[
+                  styles.lastMessage,
+                  isCurrentUserLastSender && styles.currentUserMessage,
+                ]}
+              >
+                {lastMessageText}
+              </ThemedText>
+            )}
+          </View>
         </View>
-      </View>
-    </Pressable>
-  );
-});
+      </Pressable>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   container: {

@@ -2,20 +2,24 @@ import { db } from '@/shared/database/db';
 import { chats, chatParticipants, messages } from '@/shared/database/schema';
 import { eq, inArray, desc, and, ne } from 'drizzle-orm';
 import { Chat, Message } from '@/modules/chat/types/chat.type';
+import { AppError } from '@/shared/errors/AppError';
 
 export class ChatService {
   static async getUserChats(currentUserId: string): Promise<Chat[]> {
+    try {
+      console.time('ChatService.getUserChats');
 
-    const userChats = await db
-      .select({ chatId: chatParticipants.chatId })
-      .from(chatParticipants)
-      .where(eq(chatParticipants.userId, currentUserId));
+      const userChats = await db
+        .select({ chatId: chatParticipants.chatId })
+        .from(chatParticipants)
+        .where(eq(chatParticipants.userId, currentUserId));
 
-    const chatIds = userChats.map(row => row.chatId);
+      const chatIds = userChats.map(row => row.chatId);
 
-    if (chatIds.length === 0) {
-      return [];
-    }
+      if (chatIds.length === 0) {
+        console.timeEnd('ChatService.getUserChats');
+        return [];
+      }
 
     const allParticipants = await db
       .select({
@@ -54,9 +58,10 @@ export class ChatService {
         chat.messages.push({
           id: message.id,
           senderId: message.senderId,
-          text: message.text,
+          text: message.text || undefined,
           timestamp: message.timestamp,
           status: message.status as any,
+          media: message.media ? JSON.parse(message.media) : undefined,
         });
       }
     });
@@ -66,7 +71,7 @@ export class ChatService {
       const chatMessages = data.messages;
 
       const lastMessage = chatMessages.length > 0
-        ? chatMessages[chatMessages.length - 1]
+        ? chatMessages[0]
         : undefined;
 
       return {
@@ -77,8 +82,18 @@ export class ChatService {
       };
     });
 
+    console.log(`ChatService: Loaded ${loadedChats.length} chats`);
     return loadedChats;
+  } catch (error) {
+    console.timeEnd('ChatService.getUserChats');
+    throw new AppError(
+      'Failed to load chats',
+      'database',
+      'LOAD_CHATS_ERROR',
+      error
+    );
   }
+}
 
   static async createChat(participantIds: string[]): Promise<Chat> {
     const chatId = `chat${Date.now()}`;
@@ -103,7 +118,15 @@ export class ChatService {
   }
 
 
-  static async sendMessage(chatId: string, text: string, senderId: string): Promise<Message> {
+  static async sendMessage(chatId: string, text: string, senderId: string, media?: {
+    id: string;
+    type: 'image' | 'video' | 'audio' | 'document';
+    uri: string;
+    name: string;
+    size: number;
+    mimeType: string;
+    thumbnailUri?: string;
+  }): Promise<Message> {
     const messageId = `msg${Date.now()}`;
     const timestamp = Date.now();
     
@@ -111,17 +134,19 @@ export class ChatService {
       id: messageId,
       chatId: chatId,
       senderId: senderId,
-      text: text,
+      text: text || null,
       timestamp: timestamp,
       status: 'sent',
+      media: media ? JSON.stringify(media) : null,
     });
     
     return {
       id: messageId,
       senderId,
-      text,
+      text: text || undefined,
       timestamp,
       status: 'sent',
+      media,
     };
   }
 

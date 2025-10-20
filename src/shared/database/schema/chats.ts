@@ -14,7 +14,8 @@ export const messages = sqliteTable("messages", {
   id: text("id").primaryKey(),
   chatId: text("chat_id").notNull().references(() => chats.id),
   senderId: text("sender_id").notNull(),
-  text: text("text").notNull(),
+  text: text("text"),
   timestamp: integer("timestamp").notNull(),
   status: text("status").notNull().default("sent"),
+  media: text("media"),
 });

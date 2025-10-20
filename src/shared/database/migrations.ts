@@ -13,9 +13,10 @@ export async function runMigrations() {
         id TEXT PRIMARY KEY NOT NULL,
         chat_id TEXT NOT NULL,
         sender_id TEXT NOT NULL,
-        text TEXT NOT NULL,
+        text TEXT,
         timestamp INTEGER NOT NULL,
         status TEXT DEFAULT 'sent' NOT NULL,
+        media TEXT,
         FOREIGN KEY (chat_id) REFERENCES chats(id)
       );
     `);

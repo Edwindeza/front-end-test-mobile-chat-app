@@ -3,9 +3,18 @@ export type MessageStatus = 'sending' | 'sent' | 'delivered' | 'read';
 export type Message = {
   id: string;
   senderId: string;
-  text: string;
+  text?: string;
   timestamp: number;
   status: MessageStatus;
+  media?: {
+    id: string;
+    type: 'image' | 'video' | 'audio' | 'document';
+    uri: string;
+    name: string;
+    size: number;
+    mimeType: string;
+    thumbnailUri?: string;
+  };
 };
 
 export type Chat = {

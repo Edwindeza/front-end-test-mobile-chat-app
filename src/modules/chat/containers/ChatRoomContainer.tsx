@@ -5,6 +5,7 @@ import { ChatMessages } from "@/modules/chat/components/ChatMessages";
 import { ChatInput } from "@/modules/chat/components/ChatInput";
 import { SearchModal } from "@/modules/chat/components/SearchModal";
 import { MessageEditModal } from "@/modules/chat/components/MessageEditModal";
+import { Loading } from "@/shared/components/Loading";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -17,6 +18,9 @@ import { ChatHeader } from "../components/ChatHeader";
 import { useChatRoomContainer } from "../hooks/useChatRoomContainer";
 import { useUsers } from "@/modules/user/hooks/useUsers";
 import { useChatStore } from "../store/useChatStore";
+import { MediaFile } from "@/modules/media/types/media.type";
+import { useMediaStore } from "@/modules/media/store/useMediaStore";
+import { useErrorHandler } from "@/shared/hooks/useErrorHandler";
 
 export const ChatRoomContainer: React.FC = () => {
   const [searchVisible, setSearchVisible] = useState(false);
@@ -38,7 +42,9 @@ export const ChatRoomContainer: React.FC = () => {
   } = useChatRoomContainer();
 
   const { users } = useUsers();
-  const { markMessagesAsRead, editMessage } = useChatStore();
+  const { markMessagesAsRead, editMessage, sendMessage } = useChatStore();
+  const { addMediaFile } = useMediaStore();
+  const { executeWithErrorHandling, isLoading } = useErrorHandler();
 
   useEffect(() => {
     if (chat && currentUser) {
@@ -81,6 +87,26 @@ export const ChatRoomContainer: React.FC = () => {
     setEditingMessage(null);
   };
 
+  const handleMediaSelected = async (media: MediaFile) => {
+    if (!chat || !currentUser) return;
+
+    await executeWithErrorHandling(async () => {
+      addMediaFile(media);
+
+      const mediaData = {
+        id: media.id,
+        type: media.type,
+        uri: media.uri,
+        name: media.name,
+        size: media.size,
+        mimeType: media.mimeType,
+        thumbnailUri: media.thumbnailUri,
+      };
+
+      await sendMessage(chat.id, "", currentUser.id, mediaData);
+    }, "ChatRoomContainer.handleMediaSelected");
+  };
+
   if (!chat || !currentUser) {
     return (
       <ThemedView
@@ -120,6 +146,7 @@ export const ChatRoomContainer: React.FC = () => {
         messageText={messageText}
         onMessageTextChange={setMessageText}
         onSendMessage={handleSendMessage}
+        onMediaSelected={handleMediaSelected}
       />
 
       <SearchModal
@@ -137,6 +164,8 @@ export const ChatRoomContainer: React.FC = () => {
         onSave={handleSaveEdit}
         onCancel={handleCancelEdit}
       />
+
+      {isLoading && <Loading overlay message="Processing..." />}
     </KeyboardAvoidingView>
   );
 };

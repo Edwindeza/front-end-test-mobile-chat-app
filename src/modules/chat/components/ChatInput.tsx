@@ -2,20 +2,25 @@ import React from "react";
 import { TextInput, Pressable, StyleSheet } from "react-native";
 import { ThemedView } from "@/shared/components/ThemedView";
 import { IconSymbol } from "@/shared/components/IconSymbol";
+import { MediaPicker } from "@/modules/media/components/MediaPicker";
+import { MediaFile } from "@/modules/media/types/media.type";
 
 interface ChatInputProps {
   messageText: string;
   onMessageTextChange: (text: string) => void;
   onSendMessage: () => void;
+  onMediaSelected?: (media: MediaFile) => void;
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({
   messageText,
   onMessageTextChange,
   onSendMessage,
+  onMediaSelected,
 }) => {
   return (
     <ThemedView style={styles.inputContainer}>
+      {onMediaSelected && <MediaPicker onMediaSelected={onMediaSelected} />}
       <TextInput
         style={styles.input}
         value={messageText}

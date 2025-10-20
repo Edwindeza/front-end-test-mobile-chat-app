@@ -39,7 +39,7 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
 
   const handleEdit = () => {
     setShowActions(false);
-    onEdit(message.id, message.text);
+    onEdit(message.id, message.text || '');
   };
 
   const handleDelete = () => {

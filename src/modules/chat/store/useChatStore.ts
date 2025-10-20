@@ -10,7 +10,15 @@ interface ChatState {
 
   loadChats: (currentUserId: string) => Promise<void>;
   createChat: (participantIds: string[]) => Promise<Chat | null>;
-  sendMessage: (chatId: string, text: string, senderId: string) => Promise<boolean>;
+  sendMessage: (chatId: string, text: string, senderId: string, media?: {
+    id: string;
+    type: 'image' | 'video' | 'audio' | 'document';
+    uri: string;
+    name: string;
+    size: number;
+    mimeType: string;
+    thumbnailUri?: string;
+  }) => Promise<boolean>;
   markMessagesAsRead: (chatId: string, currentUserId: string) => Promise<void>;
   deleteMessage: (messageId: string, chatId: string) => Promise<boolean>;
   editMessage: (messageId: string, newText: string, chatId: string) => Promise<boolean>;
@@ -67,11 +75,19 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
 
-  sendMessage: async (chatId: string, text: string, senderId: string) => {
-    if (!text.trim()) return false;
+  sendMessage: async (chatId: string, text: string, senderId: string, media?: {
+    id: string;
+    type: 'image' | 'video' | 'audio' | 'document';
+    uri: string;
+    name: string;
+    size: number;
+    mimeType: string;
+    thumbnailUri?: string;
+  }) => {
+    if (!text.trim() && !media) return false;
 
     try {
-      const newMessage = await ChatService.sendMessage(chatId, text, senderId);
+      const newMessage = await ChatService.sendMessage(chatId, text, senderId, media);
 
       set(state => ({
         chats: state.chats.map(chat => {
@@ -106,7 +122,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
             return {
               ...chat,
               messages: chat.messages.map(message => {
-                // Mark messages sent by others as read
                 if (message.senderId !== currentUserId) {
                   return { ...message, status: 'read' as const };
                 }
