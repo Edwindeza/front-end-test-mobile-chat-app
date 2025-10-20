@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DarkTheme,
   DefaultTheme,
@@ -14,9 +14,46 @@ import { useColorScheme } from "@/shared/hooks/useColorScheme";
 import { AppProvider } from "@/shared/Context/AppProvider";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { DrizzleStudioDevTool } from "@/database/DrizzleStudio";
+import { View, StyleSheet } from "react-native";
+import { ThemedText } from "@/shared/components/ThemedText";
+import { HelloWave } from "@/shared/components/HelloWave";
 import { ToastProvider } from "@/shared/components/Toast";
+import { useThemeColor } from "@/src/shared/hooks/useThemeColor";
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.hideAsync();
+
+function CustomSplashScreen() {
+  const backgroundColor = useThemeColor({}, "background");
+  const textColor = useThemeColor({}, "text");
+
+  return (
+    <View style={[styles.splashContainer, { backgroundColor }]}>
+      <HelloWave />
+      <ThemedText style={[styles.splashText, { color: textColor }]}>
+        Chat App
+      </ThemedText>
+      <ThemedText style={{ color: textColor, opacity: 0.7, marginTop: 10 }}>
+        Conectando...
+      </ThemedText>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  splashContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  splashText: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginTop: 30,
+    paddingTop: 30,
+    textAlign: "center",
+  },
+});
 
 function useProtectedRoute(isLoggedIn: boolean, loading: boolean) {
   const segments = useSegments();
@@ -64,15 +101,18 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      setTimeout(() => {
+        setShowSplash(false);
+      }, 2000);
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
+  if (!loaded || showSplash) {
+    return <CustomSplashScreen />;
   }
 
   return (

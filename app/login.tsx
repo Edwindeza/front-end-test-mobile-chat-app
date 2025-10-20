@@ -3,7 +3,7 @@ import { StyleSheet, SafeAreaView } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { ThemedView } from "@/shared/components/ThemedView";
-import { LoginContainer } from "@/src/modules/user/containers/LoginContainer";
+import { LoginContainer } from "@/modules/user/containers/LoginContainer";
 
 export default function LoginScreen() {
   return (

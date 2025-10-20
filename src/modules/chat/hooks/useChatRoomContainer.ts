@@ -4,7 +4,7 @@ import { useAuth } from '@/shared/hooks/useAuth';
 import { useChatStore } from '@/modules/chat/store/useChatStore';
 import { useUsers } from '@/modules/user/hooks/useUsers';
 import { Chat } from '@/modules/chat/types/chat.type';
-import { User } from '@/src/modules/user/types/user.type';
+import { getChatName } from "@/shared/utils/chatUtils";
 
 export const useChatRoomContainer = () => {
   const { chatId } = useLocalSearchParams<{ chatId: string }>();
@@ -21,12 +21,7 @@ export const useChatRoomContainer = () => {
       .map((id: string) => users.find((user: User) => user.id === id))
       .filter((user): user is User => user !== undefined) || [];
 
-  const chatName: string =
-    chatParticipants.length === 1
-      ? chatParticipants[0]?.name || 'Unknown'
-      : `${chatParticipants[0]?.name || 'Unknown'} & ${
-          chatParticipants.length - 1
-        } other${chatParticipants.length > 1 ? 's' : ''}`;
+  const chatName: string = getChatName(chatParticipants, currentUser?.id || '');
 
   const handleSendMessage = () => {
     if (messageText.trim() && currentUser && chat) {

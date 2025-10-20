@@ -1,4 +1,4 @@
-import { UserStatus } from "@/src/shared/types";
+import { UserStatus } from "@/shared/types";
 
 export type User = {
   id: string;

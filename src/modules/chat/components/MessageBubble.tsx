@@ -1,11 +1,12 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { ThemedText } from "@/shared/components/ThemedText";
-import { Message } from "@/src/modules/chat/types/chat.type";
-import { useColorScheme } from "@/src/shared/hooks/useColorScheme";
+import { Message } from "@/modules/chat/types/chat.type";
+import { useColorScheme } from "@/shared/hooks/useColorScheme";
 import { MessageStatusIndicator } from "./MessageStatusIndicator";
 import { MessageActions } from "./MessageActions";
 import { MediaMessage } from "@/modules/media/components/MediaMessage";
+import { formatTime } from "@/shared/utils/timeUtils";
 import { useThemeColor } from "@/shared/hooks/useThemeColor";
 
 interface MessageBubbleProps {
@@ -28,11 +29,6 @@ export function MessageBubble({
 
   const selfBubbleBg = useThemeColor({}, "messageBubbleBg");
   const otherBubbleBg = useThemeColor({}, "background");
-
-  const formatTime = (timestamp: number) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
 
   return (
     <MessageActions

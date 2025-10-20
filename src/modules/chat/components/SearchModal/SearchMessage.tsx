@@ -11,7 +11,7 @@ interface SearchMessageProps {
   sender: User;
   query: string;
   formatTime: (timestamp: number) => string;
-  highlightText: (text: string | undefined, query: string) => React.ReactNode;
+  highlightStyle: any;
 }
 
 export const SearchMessage: React.FC<SearchMessageProps> = ({
@@ -19,7 +19,7 @@ export const SearchMessage: React.FC<SearchMessageProps> = ({
   sender,
   query,
   formatTime,
-  highlightText,
+  highlightStyle,
 }) => {
   const messageBubbleBg = useThemeColor({}, "messageBubbleBg");
 
@@ -36,7 +36,11 @@ export const SearchMessage: React.FC<SearchMessageProps> = ({
         style={[styles.messageBubble, { backgroundColor: messageBubbleBg }]}
       >
         <ThemedText style={styles.messageText}>
-          {highlightText(message.text, query)}
+          <HighlightText
+            text={message.text}
+            query={query}
+            highlightStyle={highlightStyle}
+          />
         </ThemedText>
       </ThemedView>
     </ThemedView>

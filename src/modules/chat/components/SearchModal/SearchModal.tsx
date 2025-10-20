@@ -10,6 +10,7 @@ import { SearchInput } from "./SearchInput";
 import { SearchCounter } from "./SearchCounter";
 import { SearchNavigation } from "./SearchNavigation";
 import { SearchMessage } from "./SearchMessage";
+import { formatTime } from "@/shared/utils/timeUtils";
 
 interface SearchModalProps {
   visible: boolean;
@@ -36,31 +37,12 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     goToPrevious,
     goToNext,
     handleGoToMessage,
-    formatTime,
   } = useSearchModal({
     messages,
     users,
     onGoToMessage,
     onClose,
   });
-
-  const highlightText = (text: string | undefined, query: string) => {
-    if (!query.trim() || !text) return text;
-
-    const regex = new RegExp(`(${query})`, "gi");
-    const parts = text.split(regex);
-
-    return parts.map((part, index) => {
-      if (regex.test(part)) {
-        return (
-          <ThemedText key={index} style={styles.highlight}>
-            {part}
-          </ThemedText>
-        );
-      }
-      return part;
-    });
-  };
 
   return (
     <Modal
@@ -97,7 +79,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
             sender={currentSender}
             query={query}
             formatTime={formatTime}
-            highlightText={highlightText}
+            highlightStyle={styles.highlight}
           />
         )}
       </ThemedView>

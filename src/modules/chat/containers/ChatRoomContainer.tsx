@@ -154,7 +154,6 @@ export const ChatRoomContainer: React.FC = () => {
         onClose={() => setSearchVisible(false)}
         messages={chat.messages}
         users={users}
-        currentUserId={currentUser.id}
         onGoToMessage={handleGoToMessage}
       />
 

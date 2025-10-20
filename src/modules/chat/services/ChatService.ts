@@ -3,6 +3,7 @@ import { chats, chatParticipants, messages } from '@/shared/database/schema';
 import { eq, inArray, desc, and, ne } from 'drizzle-orm';
 import { Chat, Message } from '@/modules/chat/types/chat.type';
 import { AppError } from '@/shared/errors/AppError';
+import { ImagePersistenceService } from "@/modules/media/services/ImagePersistenceService";
 
 export class ChatService {
   static async getUserChats(currentUserId: string): Promise<Chat[]> {
@@ -129,7 +130,7 @@ export class ChatService {
   }): Promise<Message> {
     const messageId = `msg${Date.now()}`;
     const timestamp = Date.now();
-    
+
     await db.insert(messages).values({
       id: messageId,
       chatId: chatId,
@@ -139,7 +140,7 @@ export class ChatService {
       status: 'sent',
       media: media ? JSON.stringify(media) : null,
     });
-    
+
     return {
       id: messageId,
       senderId,
@@ -168,6 +169,26 @@ export class ChatService {
   }
 
   static async deleteMessage(messageId: string): Promise<void> {
+    const messageData = await db.select()
+      .from(messages)
+      .where(eq(messages.id, messageId))
+      .limit(1);
+
+    if (messageData.length > 0) {
+      const message = messageData[0];
+
+      if (message.media) {
+        try {
+          const mediaData = JSON.parse(message.media);
+          if (mediaData.uri) {
+            await ImagePersistenceService.deleteImage(mediaData.uri);
+          }
+        } catch (error) {
+          console.error('Error parsing media data or deleting image:', error);
+        }
+      }
+    }
+
     await db.delete(messages)
       .where(eq(messages.id, messageId));
   }

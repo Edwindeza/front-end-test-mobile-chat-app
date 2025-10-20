@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { useUserStore } from '@/modules/user/store/useUserStore';
 import { useChatStore } from '@/modules/chat/store/useChatStore';
-import { User } from '@/src/modules/user/types/user.type';
+import { User } from '@/modules/user/types/user.type';
 
 interface AuthState {
   currentUser: User | null;

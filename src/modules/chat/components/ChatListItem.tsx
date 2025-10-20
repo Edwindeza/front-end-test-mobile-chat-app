@@ -1,10 +1,11 @@
 import React, { useMemo, useCallback } from "react";
-import { View, StyleSheet, Pressable } from "react-native";
+import { View, Pressable, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "@/shared/components/Avatar";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { User } from "@/modules/user/types/user.type";
-import { Chat } from "@/src/modules/chat/types/chat.type";
+import { formatChatTime, getChatName } from "@/shared/utils/chatUtils";
+import { Chat } from "../types/chat.type";
 
 interface ChatListItemProps {
   chat: Chat;
@@ -24,16 +25,8 @@ export const ChatListItem = React.memo<ChatListItemProps>(
     }, [chat.participants, currentUserId, users]);
 
     const chatName = useMemo(() => {
-      if (otherParticipants.length === 0) {
-        return "No participants";
-      } else if (otherParticipants.length === 1) {
-        return otherParticipants[0].name;
-      } else {
-        return `${otherParticipants[0].name} & ${
-          otherParticipants.length - 1
-        } other${otherParticipants.length > 2 ? "s" : ""}`;
-      }
-    }, [otherParticipants]);
+      return getChatName(otherParticipants, currentUserId);
+    }, [otherParticipants, currentUserId]);
 
     const handlePress = useCallback(() => {
       navigation.navigate("ChatRoom" as never, { chatId: chat.id } as never);
@@ -41,25 +34,7 @@ export const ChatListItem = React.memo<ChatListItemProps>(
 
     const timeString = useMemo(() => {
       if (!chat.lastMessage) return "";
-
-      const date = new Date(chat.lastMessage.timestamp);
-      const now = new Date();
-      const diffInDays = Math.floor(
-        (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
-      );
-
-      if (diffInDays === 0) {
-        return date.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      } else if (diffInDays === 1) {
-        return "Yesterday";
-      } else if (diffInDays < 7) {
-        return date.toLocaleDateString([], { weekday: "short" });
-      } else {
-        return date.toLocaleDateString([], { month: "short", day: "numeric" });
-      }
+      return formatChatTime(chat.lastMessage.timestamp);
     }, [chat.lastMessage]);
 
     const isCurrentUserLastSender = useMemo(
@@ -67,17 +42,17 @@ export const ChatListItem = React.memo<ChatListItemProps>(
       [chat.lastMessage?.senderId, currentUserId]
     );
 
-  const lastMessageText = useMemo(() => {
-    if (!chat.lastMessage) return "";
-    
-    if (chat.lastMessage.media) {
-      return isCurrentUserLastSender ? "You: Photo" : "Photo";
-    }
-    
-    return isCurrentUserLastSender
-      ? `You: ${chat.lastMessage.text}`
-      : chat.lastMessage.text;
-  }, [chat.lastMessage, isCurrentUserLastSender]);
+    const lastMessageText = useMemo(() => {
+      if (!chat.lastMessage) return "";
+
+      if (chat.lastMessage.media) {
+        return isCurrentUserLastSender ? "You: Photo" : "Photo";
+      }
+
+      return isCurrentUserLastSender
+        ? `You: ${chat.lastMessage.text}`
+        : chat.lastMessage.text;
+    }, [chat.lastMessage, isCurrentUserLastSender]);
 
     return (
       <Pressable style={styles.container} onPress={handlePress}>

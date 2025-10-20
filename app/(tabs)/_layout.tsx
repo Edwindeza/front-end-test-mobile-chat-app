@@ -6,12 +6,13 @@ import TabBarBackground from "@/shared/components/TabBarBackground";
 import {
   createTabBarStyles,
   getTabBarColors,
-} from "@/src/shared/styles/tabBarStyles";
-import { getTabIcon } from "@/src/shared/components/TabIcons";
-import { useColorScheme } from "@/src/shared/hooks/useColorScheme.web";
+} from "@/shared/styles/tabBarStyles";
+import { getTabIcon } from "@/shared/components/TabIcons";
+import { useColorScheme } from "@/shared/hooks/useColorScheme.web";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+
   return (
     <Tabs
       screenOptions={{
