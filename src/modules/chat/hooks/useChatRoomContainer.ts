@@ -5,7 +5,7 @@ import { useChatStore } from '@/modules/chat/store/useChatStore';
 import { useUsers } from '@/modules/user/hooks/useUsers';
 import { Chat } from '@/modules/chat/types/chat.type';
 import { getChatName } from "@/shared/utils/chatUtils";
-import { User } from '@/modules/user/types/user.type';
+import { User } from '@/shared/types';
 
 export const useChatRoomContainer = () => {
   const { chatId } = useLocalSearchParams<{ chatId: string }>();

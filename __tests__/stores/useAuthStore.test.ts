@@ -1,7 +1,7 @@
 import { useAuthStore } from '@/shared/stores/useAuthStore';
 import { useUserStore } from '@/modules/user/store/useUserStore';
 import { useChatStore } from '@/modules/chat/store/useChatStore';
-import { User } from '@/modules/user/types/user.type';
+import { User } from '@/shared/types';
 
 jest.mock('@/modules/user/store/useUserStore');
 jest.mock('@/modules/chat/store/useChatStore');

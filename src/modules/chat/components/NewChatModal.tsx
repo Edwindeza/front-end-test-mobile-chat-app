@@ -4,7 +4,7 @@ import { ThemedView } from "@/shared/components/ThemedView";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { IconSymbol } from "@/shared/components/IconSymbol";
 import { UserListItem } from "@/modules/user/components/UserListItem";
-import { User } from "@/modules/user/types/user.type";
+import { User } from "@/shared/types";
 
 interface NewChatModalProps {
   visible: boolean;

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { UserStatus } from '@/shared/types';
-import { User } from '../types/user.type';
+import { User } from '@/shared/types';
 import { getAllUsers, updateUserOnlineStatus } from '../services/userService';
 
 interface UserState {

@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { ThemedText } from "./ThemedText";
-import { User } from "@/modules/user/types/user.type";
+import { User } from "@/shared/types";
 
 interface AvatarProps {
   user?: User;

@@ -5,7 +5,7 @@ import { Avatar } from "@/shared/components/Avatar";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { IconSymbol } from "@/shared/components/IconSymbol";
 import { useThemeColor } from "@/shared/hooks/useThemeColor";
-import { User } from "@/modules/user/types/user.type";
+import { User } from "@/shared/types";
 interface ChatHeaderProps {
   chatParticipants: User[];
   chatName: string;

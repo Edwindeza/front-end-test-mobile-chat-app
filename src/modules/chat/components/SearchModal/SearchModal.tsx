@@ -3,7 +3,7 @@ import { Modal, StyleSheet } from "react-native";
 import { ThemedView } from "@/shared/components/ThemedView";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { Message } from "@/modules/chat/types/chat.type";
-import { User } from "@/modules/user/types/user.type";
+import { User } from "@/shared/types";
 import { useSearchModal } from "./useSearchModal";
 import { SearchHeader } from "./SearchHeader";
 import { SearchInput } from "./SearchInput";

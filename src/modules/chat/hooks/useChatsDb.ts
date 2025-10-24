@@ -3,6 +3,7 @@ import { db } from '@/shared/database/db';
 import { chats, chatParticipants, messages } from '@/shared/database/schema';
 import { eq, inArray } from 'drizzle-orm';
 import { Chat, Message } from '../types/chat.type';
+import { ChatService } from '../services/ChatService';
 
 export function useChatsDb(currentUserId: string | null) {
   const [userChats, setUserChats] = useState<Chat[]>([]);
@@ -101,26 +102,7 @@ export function useChatsDb(currentUserId: string | null) {
     }
 
     try {
-      const chatId = `chat${Date.now()}`;
-
-      await db.insert(chats).values({
-        id: chatId,
-      });
-
-      for (const userId of participantIds) {
-        await db.insert(chatParticipants).values({
-          id: `cp-${chatId}-${userId}`,
-          chatId: chatId,
-          userId: userId,
-        });
-      }
-
-      const newChat: Chat = {
-        id: chatId,
-        participants: participantIds,
-        messages: [],
-      };
-
+      const newChat = await ChatService.createChat(participantIds);
       setUserChats(prevChats => [...prevChats, newChat]);
       return newChat;
     } catch (error) {
@@ -133,23 +115,7 @@ export function useChatsDb(currentUserId: string | null) {
     if (!text.trim()) return false;
 
     try {
-      const messageId = `msg${Date.now()}`;
-      const timestamp = Date.now();
-
-      await db.insert(messages).values({
-        id: messageId,
-        chatId: chatId,
-        senderId: senderId,
-        text: text,
-        timestamp: timestamp,
-      });
-
-      const newMessage: Message = {
-        id: messageId,
-        senderId,
-        text,
-        timestamp,
-      };
+      const newMessage = await ChatService.sendMessage(chatId, text, senderId);
 
       setUserChats(prevChats => {
         return prevChats.map(chat => {

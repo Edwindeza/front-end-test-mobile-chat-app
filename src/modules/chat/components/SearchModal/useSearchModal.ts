@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Message } from "@/modules/chat/types/chat.type";
-import { User } from "@/modules/user/types/user.type";
+import { User } from "@/shared/types";
 
 interface UseSearchModalProps {
   messages: Message[];

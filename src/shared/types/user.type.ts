@@ -1,4 +1,4 @@
-import { UserStatus } from "@/shared/types";
+export type UserStatus = 'online' | 'offline' | 'away';
 
 export type User = {
   id: string;

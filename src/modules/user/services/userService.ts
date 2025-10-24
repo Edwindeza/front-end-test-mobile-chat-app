@@ -1,7 +1,7 @@
 import { db } from '@/shared/database/db';
 import { users } from '@/shared/database/schema';
 import { eq } from 'drizzle-orm';
-import { User } from '../types/user.type';
+import { User } from '@/shared/types';
 import { UserStatus } from '@/shared/types';
 
 export const getAllUsers = async (): Promise<User[]> => {

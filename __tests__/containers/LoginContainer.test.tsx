@@ -1,7 +1,7 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
 import { LoginContainer } from "@/modules/user/containers/LoginContainer";
-import { User } from "@/modules/user/types/user.type";
+import { User } from "@/shared/types";
 
 const mockLogin = jest.fn();
 const mockReplace = jest.fn();

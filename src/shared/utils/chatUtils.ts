@@ -1,4 +1,4 @@
-import type { User } from "@/modules/user/types/user.type";
+import type { User } from "@/shared/types";
 
 export const formatChatTime = (timestamp: number) => {
   const date = new Date(timestamp);

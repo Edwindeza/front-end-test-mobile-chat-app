@@ -1,6 +1,6 @@
 import { formatChatTime, getChatName } from '../../src/shared/utils/chatUtils';
 import { formatTime } from '../../src/shared/utils/timeUtils';
-import type { User } from '../../src/modules/user/types/user.type';
+import type { User } from '@/shared/types';
 
 describe('chatUtils', () => {
   describe('formatChatTime', () => {

@@ -4,7 +4,8 @@ import { ThemedView } from "@/shared/components/ThemedView";
 import { ThemedText } from "@/shared/components/ThemedText";
 import { useThemeColor } from "@/shared/hooks/useThemeColor";
 import { Message } from "@/modules/chat/types/chat.type";
-import { User } from "@/modules/user/types/user.type";
+import { User } from "@/shared/types";
+import { HighlightText } from "@/src/shared/components/HighlightText";
 
 interface SearchMessageProps {
   message: Message;
